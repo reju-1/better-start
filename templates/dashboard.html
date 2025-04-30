@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Navbar Only</title>
+    <!-- Albert Sans -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Albert+Sans:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Tailwind -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body {
+        font-family: "Albert Sans", sans-serif;
+      }
+    </style>
+  </head>
+  <body class="bg-[#F5F7FF];">
+    <nav
+      class="bg-white border-b border-[#6A49BA] fixed top-0 left-0 w-full z-50"
+    >
+      <div
+        class="max-w-7xl mx-auto flex justify-between items-center px-6 py-9"
+      >
+        <!-- Left links -->
+        <div class="flex space-x-8 text-[18px] text-gray-700 font-medium">
+          <a href="#" class="hover:text-purple-600">Dashboard</a>
+          <a href="#" class="hover:text-purple-600">Transaction</a>
+          <a href="#" class="hover:text-purple-600">HR</a>
+          <a href="#" class="hover:text-purple-600">Portfolio</a>
+        </div>
+
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <img
+            src="images/betterstart-logo.png"
+            alt="BetterStart"
+            class="h-8"
+          />
+        </div>
+
+        <!-- Right links + avatar -->
+        <div
+          class="flex items-center space-x-6 text-[18px] text-gray-700 font-medium"
+        >
+          <a href="#" class="hover:text-purple-600">Extras</a>
+          <a href="#" class="hover:text-purple-600">Pricing</a>
+          <a href="#" class="hover:text-purple-600">Help</a>
+          <span class="h-6 border-l border-gray-300"></span>
+          <div class="flex items-center space-x-2">
+            <img
+              src="https://i.pravatar.cc/32"
+              alt="User avatar"
+              class="w-8 h-8 rounded-full"
+            />
+            <span class="font-medium">maomislive</span>
+          </div>
+        </div>
+      </div>
+    </nav>
+    <div
+      class="flex items-center mx-auto py-[175px] justify-center flex-col gap-[50px] max-w-[1275px]"
+    >
+      <div class="flex gap-[75px]">
+        <div class="rounded-lg flex gap-0 overflow-hidden">
+          <div
+            class="w-[300px] h-[200px] pt-[30px] pb-[30px] pl-[100px] pr-[30px] bg-[#6a49ba] flex flex-col justify-between items-end inline-flex"
+          >
+            <div
+              class="self-stretch text-right text-[#F6F9FF] text-[20px] font-bold leading-[30px]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Completed<br />Projects
+            </div>
+            <div
+              class="self-stretch text-right text-[#F6F9FF] text-[48px] font-bold break-words"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              25
+            </div>
+          </div>
+          <div class="w-[300px] h-[200px] flex flex-col">
+            <div
+              class="flex flex-col gap-5 p-[19.5px] border border-[#6a49ba] rounded-tr-lg"
+            >
+              <div
+                class="self-stretch text-right text-[rgba(0,0,0,0.75)] text-[16px] font-[600] font-[Albert Sans]"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+              >
+                Running Project
+              </div>
+              <div
+                class="self-stretch text-right text-[#6a49ba] text-[40px] font-[Albert Sans] font-extrabold break-words"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+              >
+                1
+              </div>
+            </div>
+            <div
+              style="
+                align-self: stretch;
+                padding: 19.5px;
+                border: 1px #6a49ba solid;
+                border-top: none;
+                border-bottom-right-radius: 10px;
+                flex-direction: column;
+                gap: 20px;
+                display: flex;
+              "
+            >
+              <div
+                style="
+                  align-self: stretch;
+                  text-box-trim: trim-both;
+                  text-box-edge: cap alphabetic;
+                  text-align: right;
+                  color: rgba(0, 0, 0, 0.75);
+                  font-size: 16px;
+                  font-family: Albert Sans;
+                  font-weight: 600;
+                "
+              >
+                Cancelled Project
+              </div>
+              <div
+                style="
+                  align-self: stretch;
+                  text-box-trim: trim-both;
+                  text-box-edge: cap alphabetic;
+                  text-align: right;
+                  color: #6a49ba;
+                  font-size: 40px;
+                  font-family: Albert Sans;
+                  font-weight: 800;
+                  word-wrap: break-word;
+                "
+              >
+                1
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="rounded-lg flex gap-0 overflow-hidden">
+          <div
+            class="w-[300px] h-[200px] pt-[30px] pb-[30px] pl-[100px] pr-[30px] bg-[#6a49ba] flex flex-col justify-between items-end inline-flex"
+          >
+            <div
+              class="self-stretch text-right text-[#F6F9FF] text-[20px] font-bold leading-[30px]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Completed<br />Projects
+            </div>
+            <div
+              class="self-stretch text-right text-[#F6F9FF] text-[48px] font-bold break-words"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              25
+            </div>
+          </div>
+          <div class="w-[300px] h-[200px] flex flex-col">
+            <div
+              class="flex flex-col gap-5 p-[19.5px] border border-[#6a49ba] rounded-tr-lg"
+            >
+              <div
+                class="self-stretch text-right text-[rgba(0,0,0,0.75)] text-[16px] font-[600] font-[Albert Sans]"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+              >
+                Running Project
+              </div>
+              <div
+                class="self-stretch text-right text-[#6a49ba] text-[40px] font-[Albert Sans] font-extrabold break-words"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+              >
+                1
+              </div>
+            </div>
+            <div
+              style="
+                align-self: stretch;
+                padding: 19.5px;
+                border: 1px #6a49ba solid;
+                border-top: none;
+                border-bottom-right-radius: 10px;
+                flex-direction: column;
+                gap: 20px;
+                display: flex;
+              "
+            >
+              <div
+                style="
+                  align-self: stretch;
+                  text-box-trim: trim-both;
+                  text-box-edge: cap alphabetic;
+                  text-align: right;
+                  color: rgba(0, 0, 0, 0.75);
+                  font-size: 16px;
+                  font-family: Albert Sans;
+                  font-weight: 600;
+                "
+              >
+                Cancelled Project
+              </div>
+              <div
+                style="
+                  align-self: stretch;
+                  text-box-trim: trim-both;
+                  text-box-edge: cap alphabetic;
+                  text-align: right;
+                  color: #6a49ba;
+                  font-size: 40px;
+                  font-family: Albert Sans;
+                  font-weight: 800;
+                  word-wrap: break-word;
+                "
+              >
+                1
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 w-full">
+        <div class="flex justify-between items-center">
+          <h1 class="text-[1.5rem] font-bold font-[Albert Sans]">
+            Projects Overview
+          </h1>
+          <a
+            href="#"
+            class="text-[1.5rem] font-semibold text-black no-underline flex items-center gap-5 font-[Albert Sans]"
+          >
+            Add a project
+            <img
+              src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
+              alt
+              style="width: 18px"
+            />
+          </a>
+        </div>
+
+        <div class="flex gap-6">
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center w-[250px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Project Dashboard
+            </div>
+            <div
+              class="text-[18px] text-[#555]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Click here →
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 w-full">
+        <div class="flex justify-between items-center">
+          <h1 class="text-[1.5rem] font-bold font-[Albert Sans]">
+            Projects Overview
+          </h1>
+          <a
+            href="#"
+            class="text-[1.5rem] font-semibold text-black no-underline flex items-center gap-5 font-[Albert Sans]"
+          >
+            Add a project
+            <img
+              src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
+              alt
+              style="width: 18px"
+            />
+          </a>
+        </div>
+
+        <div class="flex gap-6">
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              This Week
+            </div>
+            <div
+              class="text-[40px] font-bold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              2
+            </div>
+          </div>
+
+          <div
+            class="border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center w-[250px] font-['Albert_Sans']"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Project Dashboard
+            </div>
+            <div
+              class="text-[18px] text-[#555]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Click here →
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-4 w-full">
+        <div class="flex justify-between items-center">
+          <h1 class="text-[1.5rem] font-bold font-['Albert_Sans']">
+            Employees Details
+          </h1>
+          <a
+            href="#"
+            class="text-[1.5rem] font-semibold text-black no-underline flex items-center gap-5 font-['Albert_Sans']"
+          >
+            Recruit a member
+            <img
+              src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
+              width="18px"
+            />
+          </a>
+        </div>
+
+        <div class="flex gap-6">
+          <div
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] h-[135px] font-['Albert_Sans'] items-center"
+          >
+            <div
+              class="text-[20px] font-semibold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
+            >
+              Members
+            </div>
+            <div class="flex -space-x-2">
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&&auto=format&fit=facearea&facepad=3&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <div
+                class="hs-dropdown [--placement:top-left] relative inline-flex"
+              >
+                <button
+                  id="hs-avatar-group-dropdown"
+                  class="hs-dropdown-toggle inline-flex items-center justify-center size-11 rounded-full bg-gray-100 border-2 border-white font-medium text-gray-700 shadow-2xs align-middle hover:bg-gray-200 focus:outline-hidden focus:bg-gray-300 text-sm"
+                  aria-haspopup="menu"
+                  aria-expanded="false"
+                  aria-label="Dropdown"
+                >
+                  <span class="font-medium">9+</span>
+                </button>
+
+                <div
+                  class="hs-dropdown-menu hs-dropdown-open:opacity-100 w-48 hidden z-10 transition-[margin,opacity] opacity-0 duration-300 mb-2 bg-white shadow-md rounded-lg p-2"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="hs-avatar-group-dropdown"
+                >
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Chris Lynch
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Maria Guan
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Amil Evara
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Ebele Egbuna
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              flex: 1;
+              border: 1px solid #9a86fd;
+              display: flex;
+              gap: 20px;
+              flex-direction: column;
+              border-radius: 10px;
+              padding: 1.5rem;
+              text-align: center;
+              min-width: 150px;
+              height: 135px;
+              font-family: 'Albert Sans', sans-serif;
+              align-items: center;
+            "
+          >
+            <div
+              style="
+                font-size: 20px;
+                font-weight: 600;
+                text-box-trim: trim-both;
+                text-box-edge: cap alphabetic;
+                color: #333;
+              "
+            >
+              New Members
+            </div>
+            <div class="flex -space-x-2">
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&&auto=format&fit=facearea&facepad=3&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <div
+                class="hs-dropdown [--placement:top-left] relative inline-flex"
+              >
+                <div
+                  class="hs-dropdown-menu hs-dropdown-open:opacity-100 w-48 hidden z-10 transition-[margin,opacity] opacity-0 duration-300 mb-2 bg-white shadow-md rounded-lg p-2"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="hs-avatar-group-dropdown"
+                >
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Chris Lynch
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Maria Guan
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Amil Evara
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Ebele Egbuna
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              flex: 1;
+              border: 1px solid #9a86fd;
+              display: flex;
+              gap: 20px;
+              flex-direction: column;
+              border-radius: 10px;
+              padding: 1.5rem;
+              text-align: center;
+              min-width: 150px;
+              height: 135px;
+              font-family: 'Albert Sans', sans-serif;
+              align-items: center;
+            "
+          >
+            <div
+              style="
+                font-size: 20px;
+                font-weight: 600;
+                text-box-trim: trim-both;
+                text-box-edge: cap alphabetic;
+                color: #333;
+              "
+            >
+              Recruit Applicants
+            </div>
+            <div class="flex -space-x-2 blur-[3px]">
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1568602471122-7832951cc4c5?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1531927557220-a9e23c1e4794?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1541101767792-f9b2b1c4f127?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&&auto=format&fit=facearea&facepad=3&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <img
+                class="inline-block size-11 rounded-full ring-2 ring-white"
+                src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80"
+                alt="Avatar"
+              />
+              <div
+                class="hs-dropdown [--placement:top-left] relative inline-flex"
+              >
+                <div
+                  class="hs-dropdown-menu hs-dropdown-open:opacity-100 w-48 hidden z-10 transition-[margin,opacity] opacity-0 duration-300 mb-2 bg-white shadow-md rounded-lg p-2"
+                  role="menu"
+                  aria-orientation="vertical"
+                  aria-labelledby="hs-avatar-group-dropdown"
+                >
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Chris Lynch
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Maria Guan
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Amil Evara
+                  </a>
+                  <a
+                    class="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100"
+                    href="#"
+                  >
+                    Ebele Egbuna
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            style="
+              border: 1px solid #9a86fd;
+              display: flex;
+              gap: 20px;
+              flex-direction: column;
+              border-radius: 10px;
+              padding: 1.5rem;
+              text-align: center;
+              width: 250px;
+              font-family: 'Albert Sans', sans-serif;
+            "
+          >
+            <div
+              style="
+                font-size: 20px;
+                font-weight: 600;
+                text-box-trim: trim-both;
+                text-box-edge: cap alphabetic;
+                margin-bottom: 0.5rem;
+                color: #333;
+              "
+            >
+              See Hierarchy
+            </div>
+            <div
+              style="
+                font-size: 18px;
+                color: #555;
+                text-box-trim: trim-both;
+                text-box-edge: cap alphabetic;
+              "
+            >
+              Click here →
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
