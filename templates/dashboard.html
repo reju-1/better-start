@@ -18,6 +18,7 @@
     </style>
   </head>
   <body class="bg-[#F5F7FF];">
+    <!-- Nav Bar Starts-->
     <nav
       class="bg-white border-b border-[#6A49BA] fixed top-0 left-0 w-full z-50"
     >
@@ -60,9 +61,13 @@
         </div>
       </div>
     </nav>
+    <!-- Nav Bar Ends-->
+
+    <!-- Main Content Starts-->
     <div
       class="flex items-center mx-auto py-[175px] justify-center flex-col gap-[50px] max-w-[1275px]"
     >
+      <!-- Stats Container Starts-->
       <div class="flex gap-[75px]">
         <div class="rounded-lg flex gap-0 overflow-hidden">
           <div
@@ -99,43 +104,17 @@
               </div>
             </div>
             <div
-              style="
-                align-self: stretch;
-                padding: 19.5px;
-                border: 1px #6a49ba solid;
-                border-top: none;
-                border-bottom-right-radius: 10px;
-                flex-direction: column;
-                gap: 20px;
-                display: flex;
-              "
+              class="flex flex-col gap-5 p-[19.5px] border border-t-0 border-[#6a49ba] rounded-br-lg"
             >
               <div
-                style="
-                  align-self: stretch;
-                  text-box-trim: trim-both;
-                  text-box-edge: cap alphabetic;
-                  text-align: right;
-                  color: rgba(0, 0, 0, 0.75);
-                  font-size: 16px;
-                  font-family: Albert Sans;
-                  font-weight: 600;
-                "
+                class="self-stretch text-right text-[rgba(0,0,0,0.75)] text-[16px] font-semibold font-[Albert Sans]"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
               >
                 Cancelled Project
               </div>
               <div
-                style="
-                  align-self: stretch;
-                  text-box-trim: trim-both;
-                  text-box-edge: cap alphabetic;
-                  text-align: right;
-                  color: #6a49ba;
-                  font-size: 40px;
-                  font-family: Albert Sans;
-                  font-weight: 800;
-                  word-wrap: break-word;
-                "
+                class="self-stretch text-right text-[#6a49ba] text-[40px] font-extrabold break-words"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
               >
                 1
               </div>
@@ -177,43 +156,17 @@
               </div>
             </div>
             <div
-              style="
-                align-self: stretch;
-                padding: 19.5px;
-                border: 1px #6a49ba solid;
-                border-top: none;
-                border-bottom-right-radius: 10px;
-                flex-direction: column;
-                gap: 20px;
-                display: flex;
-              "
+              class="self-stretch p-[19.5px] border border-t-0 border-[#6a49ba] rounded-br-lg flex flex-col gap-5"
             >
               <div
-                style="
-                  align-self: stretch;
-                  text-box-trim: trim-both;
-                  text-box-edge: cap alphabetic;
-                  text-align: right;
-                  color: rgba(0, 0, 0, 0.75);
-                  font-size: 16px;
-                  font-family: Albert Sans;
-                  font-weight: 600;
-                "
+                class="self-stretch text-right text-[rgba(0,0,0,0.75)] text-[16px] font-semibold font-[Albert Sans]"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
               >
                 Cancelled Project
               </div>
               <div
-                style="
-                  align-self: stretch;
-                  text-box-trim: trim-both;
-                  text-box-edge: cap alphabetic;
-                  text-align: right;
-                  color: #6a49ba;
-                  font-size: 40px;
-                  font-family: Albert Sans;
-                  font-weight: 800;
-                  word-wrap: break-word;
-                "
+                class="self-stretch text-right text-[#6a49ba] text-[40px] font-[Albert Sans] font-extrabold break-words"
+                style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
               >
                 1
               </div>
@@ -221,7 +174,8 @@
           </div>
         </div>
       </div>
-
+      <!-- Stats Container Ends-->
+      <!-- Project Overview Starts-->
       <div class="flex flex-col gap-4 w-full">
         <div class="flex justify-between items-center">
           <h1 class="text-[1.5rem] font-bold font-[Albert Sans]">
@@ -234,8 +188,8 @@
             Add a project
             <img
               src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
-              alt
-              style="width: 18px"
+              alt="Redirect"
+              width="18px"
             />
           </a>
         </div>
@@ -310,7 +264,8 @@
           </div>
         </div>
       </div>
-
+      <!-- Project Overview Ends-->
+      <!-- Earning Summary Starts-->
       <div class="flex flex-col gap-4 w-full">
         <div class="flex justify-between items-center">
           <h1 class="text-[1.5rem] font-bold font-[Albert Sans]">
@@ -323,8 +278,8 @@
             Add a project
             <img
               src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
-              alt
-              style="width: 18px"
+              alt="Redirect"
+              width="18px"
             />
           </a>
         </div>
@@ -399,7 +354,8 @@
           </div>
         </div>
       </div>
-
+      <!-- Earning Summary Ends-->
+      <!-- Employee Details Starts-->
       <div class="flex flex-col gap-4 w-full">
         <div class="flex justify-between items-center">
           <h1 class="text-[1.5rem] font-bold font-['Albert_Sans']">
@@ -412,6 +368,7 @@
             Recruit a member
             <img
               src="https://i.ibb.co.com/gbNMx7dC/redirect.png"
+              alt="Redirect"
               width="18px"
             />
           </a>
@@ -497,29 +454,11 @@
           </div>
 
           <div
-            style="
-              flex: 1;
-              border: 1px solid #9a86fd;
-              display: flex;
-              gap: 20px;
-              flex-direction: column;
-              border-radius: 10px;
-              padding: 1.5rem;
-              text-align: center;
-              min-width: 150px;
-              height: 135px;
-              font-family: 'Albert Sans', sans-serif;
-              align-items: center;
-            "
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] h-[135px] font-['Albert_Sans'] items-center"
           >
             <div
-              style="
-                font-size: 20px;
-                font-weight: 600;
-                text-box-trim: trim-both;
-                text-box-edge: cap alphabetic;
-                color: #333;
-              "
+              class="text-[20px] font-semibold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
             >
               New Members
             </div>
@@ -583,29 +522,11 @@
           </div>
 
           <div
-            style="
-              flex: 1;
-              border: 1px solid #9a86fd;
-              display: flex;
-              gap: 20px;
-              flex-direction: column;
-              border-radius: 10px;
-              padding: 1.5rem;
-              text-align: center;
-              min-width: 150px;
-              height: 135px;
-              font-family: 'Albert Sans', sans-serif;
-              align-items: center;
-            "
+            class="flex-1 border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center min-w-[150px] h-[135px] font-['Albert_Sans'] items-center"
           >
             <div
-              style="
-                font-size: 20px;
-                font-weight: 600;
-                text-box-trim: trim-both;
-                text-box-edge: cap alphabetic;
-                color: #333;
-              "
+              class="text-[20px] font-semibold text-[#333]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
             >
               Recruit Applicants
             </div>
@@ -669,43 +590,25 @@
           </div>
 
           <div
-            style="
-              border: 1px solid #9a86fd;
-              display: flex;
-              gap: 20px;
-              flex-direction: column;
-              border-radius: 10px;
-              padding: 1.5rem;
-              text-align: center;
-              width: 250px;
-              font-family: 'Albert Sans', sans-serif;
-            "
+            class="border border-[#9a86fd] flex flex-col gap-5 rounded-lg p-6 text-center w-[250px] font-['Albert_Sans']"
           >
             <div
-              style="
-                font-size: 20px;
-                font-weight: 600;
-                text-box-trim: trim-both;
-                text-box-edge: cap alphabetic;
-                margin-bottom: 0.5rem;
-                color: #333;
-              "
+              class="text-[20px] font-semibold text-[#333] mb-2"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
             >
               See Hierarchy
             </div>
             <div
-              style="
-                font-size: 18px;
-                color: #555;
-                text-box-trim: trim-both;
-                text-box-edge: cap alphabetic;
-              "
+              class="text-[18px] text-[#555]"
+              style="text-box-trim: trim-both; text-box-edge: cap alphabetic"
             >
               Click here →
             </div>
           </div>
         </div>
       </div>
+      <!-- Employee Details Ends-->
     </div>
+    <!-- Main Content Ends-->
   </body>
 </html>
