@@ -10,7 +10,7 @@ const Button = ({
     <button
       type={type}
       disabled={disabled || isLoading}
-      className={`w-full bg-[#6A49BA] text-white font-semibold py-2 rounded-md transition ${
+      className={`w-full bg-primary text-white font-semibold py-2 rounded-md transition ${
         disabled || isLoading
           ? "opacity-70 cursor-not-allowed"
           : "hover:bg-purple-600"

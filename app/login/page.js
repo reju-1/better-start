@@ -5,7 +5,7 @@ const page = () => {
   return (
     <div className="h-screen w-screen flex">
       {/* <!-- Left Half: Form --> */}
-      <div className="w-1/2 bg-[#f4f4fc] flex items-center justify-center">
+      <div className="w-1/2 bg-bg-color flex items-center justify-center">
         <LoginForm />
       </div>
 

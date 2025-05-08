@@ -81,7 +81,7 @@ const RegisterForm = () => {
           confirmPassword: "",
         }}
       >
-        <h2 className="text-3xl font-bold text-[#6A49BA] text-center mb-2">
+        <h2 className="text-3xl font-bold text-primary text-center mb-2">
           Sign Up!
         </h2>
 
@@ -141,11 +141,11 @@ const RegisterForm = () => {
           disabled={isLoading}
         />
 
-        <p className="text-center text-gray-600">
+        <p className="text-center text-primary-text-color">
           Already have an account?{" "}
           <Link
             href="/login"
-            className="text-[#6A49BA] hover:text-purple-700 font-semibold"
+            className="text-primary hover:text-purple-700 font-semibold"
           >
             Login here
           </Link>

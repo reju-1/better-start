@@ -1,3 +1,28 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+:root {
+  --color-primary: #6a49ba;
+  --color-bg-color: #f6f9ff;
+  --color-primary-text-color: #404040;
+  --font-albert-sans: "Albert Sans", sans-serif;
+}
+
+html {
+  font-family: var(--font-albert-sans);
+}
+
+body {
+  font-family: var(--font-albert-sans);
+}
+
+.bg-primary {
+  background-color: var(--color-primary);
+}
+.bg-bg-color {
+  background-color: var(--color-bg-color);
+}
+.text-primary-text-color {
+  color: var(--color-primary-text-color);
+}
