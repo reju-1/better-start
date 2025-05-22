@@ -1,6 +1,7 @@
 import Providers from "@/lib/Provider";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import PrelineScriptWrapper from "@/components/PrelineScriptWrapper";
 
 export const metadata = {
   title: "BetterStart",
@@ -11,10 +12,11 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
+      <body className="bg-[#F5F7FF]">
         <Providers>
           <Toaster position="top-center" />
           {children}
+          <PrelineScriptWrapper />
         </Providers>
       </body>
     </html>
