@@ -8,6 +8,7 @@ import CustomInput from "@/components/form/CustomInput";
 import Button from "@/components/ui/Button";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 // Login validation schema
 const loginSchema = z.object({
@@ -22,6 +23,7 @@ const loginSchema = z.object({
 });
 
 const LoginForm = () => {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (data) => {
@@ -37,6 +39,8 @@ const LoginForm = () => {
       toast.success("Login successful!", {
         id: toastId,
       });
+
+      router.push("/dashboard");
     } catch (error) {
       console.error("Login failed:", error);
       toast.error("Login failed. Please try again.", {
