@@ -9,6 +9,7 @@ const StatsBox = ({
   variant = "number",
   height,
   blur = false,
+  target = "_self",
 }) => {
   const commonClasses = `border border-primary flex flex-col gap-5 rounded-lg p-6 text-center ${
     height || (variant === "avatar" ? "h-[135px]" : "")
@@ -52,7 +53,11 @@ const StatsBox = ({
   );
 
   return href ? (
-    <Link href={href} className={`${commonClasses} ${variantClasses}`}>
+    <Link
+      href={href}
+      target={target}
+      className={`${commonClasses} ${variantClasses}`}
+    >
       {content}
     </Link>
   ) : (
