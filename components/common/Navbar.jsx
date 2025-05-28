@@ -35,8 +35,22 @@ const Navbar = () => {
             Dashboard
           </Link>
           <Link
-            href="#"
-            className="text-gray-700 hover:text-primary transition-colors"
+            href="/dashboard/project"
+            className={`transition-colors ${
+              isActiveLink("/dashboard/project")
+                ? "text-primary font-semibold"
+                : "text-gray-700 hover:text-primary"
+            }`}
+          >
+            Project
+          </Link>
+          <Link
+            href="/dashboard/sales"
+            className={`transition-colors ${
+              isActiveLink("/dashboard/sales")
+                ? "text-primary font-semibold"
+                : "text-gray-700 hover:text-primary"
+            }`}
           >
             Transaction
           </Link>
@@ -48,13 +62,7 @@ const Navbar = () => {
                 : "text-gray-700 hover:text-primary"
             }`}
           >
-            HR
-          </Link>
-          <Link
-            href="#"
-            className="text-gray-700 hover:text-primary transition-colors"
-          >
-            Portfolio
+            Employee
           </Link>
         </div>
 
@@ -66,6 +74,7 @@ const Navbar = () => {
             width={250}
             height={70}
             className="h-8 w-auto"
+            priority
           />
         </div>
 
@@ -79,7 +88,7 @@ const Navbar = () => {
                 : "text-gray-700 hover:text-primary"
             }`}
           >
-            AI
+            Extras
           </Link>
           <Link
             href="/dashboard/pricing"

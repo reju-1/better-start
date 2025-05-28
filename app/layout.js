@@ -1,7 +1,7 @@
-import Providers from "@/lib/Provider";
+import Providers from "../lib/Provider";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
-import PrelineScriptWrapper from "@/components/PrelineScriptWrapper";
+import PrelineScriptWrapper from "../components/PrelineScriptWrapper";
 
 export const metadata = {
   title: "BetterStart",
