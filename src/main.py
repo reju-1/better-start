@@ -3,6 +3,9 @@ from contextlib import asynccontextmanager
 
 from .core import init_db
 
+# Router imports
+from .features import hr_router, hr_management
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -23,3 +26,7 @@ app = FastAPI(
 def get_root():
     """Health Route"""
     return {"Message": "Welcome To BetterStart"}
+
+
+# # Include the routers
+app.include_router(hr_router, prefix="/api", tags=["HR"])
