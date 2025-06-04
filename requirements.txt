@@ -1,0 +1,17 @@
+# ======== Core ==========
+fastapi
+uvicorn
+httpx
+
+sqlmodel
+pydantic[email,timezone]
+pydantic-settings
+
+
+# ======== Security ==========
+PyJWT
+passlib[bcrypt]
+
+
+# ======== AI ===========
+openai
