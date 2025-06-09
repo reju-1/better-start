@@ -14,4 +14,4 @@ passlib[bcrypt]
 
 
 # ======== AI ===========
-openai
+# openai
