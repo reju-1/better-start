@@ -1,6 +1,18 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime
+from enum import Enum
+
+
+class MemberRole(str, Enum):
+    ADMIN = "Admin"
+    MEMBER = "Member"
+
+
+class Status(str, Enum):
+    ACTIVE = "Active"
+    INACTIVE = "Inactive"
+    PENDING = "Pending"
 
 
 class Company(SQLModel, table=True):
@@ -34,6 +46,8 @@ class Company(SQLModel, table=True):
     # Optional Metrics
     monthly_target: Optional[int] = None
 
+    status: Status = Field(default=Status.PENDING)
+
 
 class CompanyMember(SQLModel, table=True):
     """Links a user to a company with a role and status"""
@@ -46,11 +60,11 @@ class CompanyMember(SQLModel, table=True):
     company_id: int = Field(foreign_key="company.id")
 
     # Role & Position
-    role: str = Field(max_length=255)
+    role: MemberRole = Field(...)
     position: str = Field(max_length=255)
 
     # Optional Compensation
     salary: Optional[float] = None
 
     # Membership Status
-    status: str = Field(max_length=255)
+    status: Status = Field(default=Status.PENDING)

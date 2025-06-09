@@ -1,6 +1,13 @@
 from sqlmodel import SQLModel, Field
 from typing import Optional
 from datetime import datetime, date
+from enum import Enum
+
+
+class ApplicationStatus(str, Enum):
+    PENDING = "Pending"
+    ACCEPTED = "Accepted"
+    REJECTED = "Rejected"
 
 
 class JobListing(SQLModel, table=True):
@@ -51,4 +58,4 @@ class CVSubmit(SQLModel, table=True):
     cv_feedback: Optional[str] = None
 
     # Status Tracking
-    status: str = Field(max_length=255)
+    status: ApplicationStatus = Field(default=ApplicationStatus.PENDING)
