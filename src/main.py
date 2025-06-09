@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
 from .core import init_db
+import src.models  # Temporary: For creating Tables
 
 # Router imports
 from .features import hr_router, hr_management
