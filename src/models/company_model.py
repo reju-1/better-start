@@ -9,6 +9,9 @@ class Company(SQLModel, table=True):
     # Primary Key
     id: Optional[int] = Field(default=None, primary_key=True)
 
+    # Foreign Key
+    user_id: int = Field(foreign_key="user.id")
+
     # Basic Info
     name: str = Field(max_length=255)
     logo_url: str = Field(max_length=255)
