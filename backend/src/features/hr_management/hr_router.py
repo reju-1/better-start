@@ -4,8 +4,9 @@ from sqlmodel import Session
 
 # Internal imports
 from src.core import get_session
+from src import schemas as gs  # Global Schemas
 from . import hr_schemas as schema
-from . import hr_controllers as controler
+from . import hr_controllers as controller
 
 DBSession = Annotated[Session, Depends(get_session)]
 router = APIRouter(prefix="/hr")
@@ -13,19 +14,27 @@ router = APIRouter(prefix="/hr")
 
 @router.get("/job-posts")
 def get_job_posts(session: DBSession):
-    return controler.get_jobs(session)
+    return controller.get_jobs(session)
 
 
 @router.post("/job-posts", status_code=status.HTTP_201_CREATED)
 def create_job_post(job_data: schema.JobPost, session: DBSession):
-    return controler.create_job(job_data, session)
+    return controller.create_job(job_data, session)
 
 
 @router.post("/job-apply", status_code=status.HTTP_201_CREATED)
 def apply_to_job(application_data, session: DBSession):
-    return controler.handle_job_application(application_data, session)
+    return controller.handle_job_application(application_data, session)
 
 
-@router.post("/cv-rating")
+@router.get("/cv/upload-url", response_model=gs.PresignedURLResponse)
+def get_cv_upload_url(file_name: str = "cv.pdf"):
+    """
+    Returns a pre-signed S3 URL to upload a CV.
+    """
+    return controller.generate_url(file_name)
+
+
+@router.post("/cv/rating")
 def update_cv_rating(rating_data, session: DBSession):
-    return controler.handle_cv_rating(rating_data, session)
+    return controller.handle_cv_rating(rating_data, session)

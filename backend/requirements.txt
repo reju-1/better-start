@@ -8,6 +8,10 @@ pydantic[email,timezone]
 pydantic-settings
 
 
+# ========== SDK ============
+boto3
+
+
 # ======== Security ==========
 PyJWT
 passlib[bcrypt]
