@@ -1,0 +1,30 @@
+# Python bytecode and cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environment and environment config
+venv/
+.venv/
+.env
+
+# RabbitMQ logs or message cache (if stored locally)
+*.log
+*.pid
+*.sock
+
+# Cloud credentials (NEVER commit these)
+*.pem
+*.key
+*.crt
+.aws/
+.gcloud/
+azure/
+
+# Common editor/IDE folders
+.vscode/
+.idea/
+
+# OS-specific files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,14 @@
+# ========== Core ==========
+pika
+pypdf
+
+# =========== AI ===========
+openai
+
+# =========== SDKs ===========
+boto3
+
+# ========= Utility =========
+pydantic
+pydantic-settings
+tenacity

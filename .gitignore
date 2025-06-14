@@ -20,6 +20,9 @@ dist/
 build/
 .coverage
 htmlcov/
+.venv/
+venv/
+
 
 ### Node/React ###
 node_modules/
