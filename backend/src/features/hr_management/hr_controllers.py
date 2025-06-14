@@ -1,8 +1,13 @@
 import uuid
 from fastapi import status, HTTPException
+from sqlmodel import Session
 
 from src.core import settings
 from src.services.s3 import create_presigned_url
+
+from src import schemas as gs  # Global schemas
+from . import hr_schemas as schema
+from .hr_services import publish_to_rabbitmq
 
 
 def get_jobs(session):
@@ -13,12 +18,29 @@ def create_job(job_data, session):
     return "Job Created Successfully"
 
 
-def handle_job_application(application, session):
-    return "Successfully applied"
+count = 0
+
+
+def handle_job_application(application: schema.JobApply, session: Session):
+    # Up in MQ
+    job_description = "Query from db"
+    global count
+    count += 1
+    applicant_id = count
+    payload = schema.CvReportRequest(
+        applicant_id=applicant_id,
+        job_prompt=job_description,
+        cv_pdf_url=application.cv_pdf,
+    )
+    publish_to_rabbitmq(payload.model_dump())
+
+    # DB
+
+    return {"message": "You have successfully applied"}
 
 
 def handle_cv_rating(rating_dat, session):
-    return "Rating updated Successfully"
+    return {"message": "Successfully added"}
 
 
 def generate_url(file_name):

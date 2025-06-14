@@ -22,9 +22,12 @@ def create_job_post(job_data: schema.JobPost, session: DBSession):
     return controller.create_job(job_data, session)
 
 
-@router.post("/job-apply", status_code=status.HTTP_201_CREATED)
-def apply_to_job(application_data, session: DBSession):
-    return controller.handle_job_application(application_data, session)
+@router.post("/job-apply", response_model=gs.Message)
+def apply_to_job(data: schema.JobApply, session: DBSession):
+    """
+    Handles job application submission by a candidate.
+    """
+    return controller.handle_job_application(data, session)
 
 
 @router.get("/cv/upload-url", response_model=gs.PresignedURLResponse)
@@ -35,6 +38,10 @@ def get_cv_upload_url(file_name: str = "cv.pdf"):
     return controller.generate_url(file_name)
 
 
-@router.post("/cv/rating")
-def update_cv_rating(rating_data, session: DBSession):
-    return controller.handle_cv_rating(rating_data, session)
+@router.post("/cv/rating", response_model=gs.Message)
+def update_cv_rating(rating: schema.CvReport, session: DBSession):
+    """
+    Receives CV rating data from RabbitMQ and updates the candidate's report in the database.
+    """
+    print(f"[✔] Received CV Report: {rating}")
+    return controller.handle_cv_rating(rating, session)

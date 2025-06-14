@@ -19,3 +19,7 @@ passlib[bcrypt]
 
 # ======== AI ===========
 # openai
+
+
+# ======== Others ===========
+pika

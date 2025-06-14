@@ -1,6 +1,6 @@
-from pydantic import BaseModel, EmailStr
 from typing import Optional
 from datetime import datetime
+from pydantic import BaseModel, EmailStr, ConfigDict, Field, conint, constr
 
 
 class JobPost(BaseModel):
@@ -34,22 +34,35 @@ class JobPost(BaseModel):
     created_at: datetime
     end_date: datetime
 
-    class Config:
-        orm_mode = True  # allows using ORM objects directly
+    model_config = ConfigDict(from_attributes=True)
 
 
 class JobApply(BaseModel):
     """What the candidate fills in when applying for a job"""
 
-    name: str              # Full name of the applicant
-    email: EmailStr        # Validated email
-    phone: str             # Contact number
-    cv_pdf: str            # Link or filename for uploaded CV (PDF)
+    job_id: int = Field(..., description="ID of the job the candidate is applying to")
+    name: str = Field(..., description="Full name of the candidate")
+    email: EmailStr
+    phone: str
+    cv_pdf: str = Field(..., description="S3 object key of the uploaded CV")
 
 
 class JobApplyResponse(BaseModel):
     """The response sent after a candidate successfully applies"""
 
     message: str = "Application submitted successfully"  # Status message
-    applicant_name: str                                   # For display
-    job_id: int                                            # Job they applied to
+    applicant_name: str  # For display
+    job_id: int  # Job they applied to
+
+
+# === CV Request and Response Schemas ===
+class CvReportRequest(BaseModel):
+    applicant_id: int
+    job_prompt: str
+    cv_pdf_url: str  # S3 URL
+
+
+class CvReport(BaseModel):
+    applicant_id: int
+    rating: conint(ge=1, le=5)  # type: ignore
+    remarks: constr(strip_whitespace=True, max_length=300)  # type: ignore

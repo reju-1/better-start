@@ -1,4 +1,9 @@
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, Field
+
+
+# Generic response message
+class Message(BaseModel):
+    message: str = Field(..., example="Operation successful")
 
 
 class PresignedURLResponse(BaseModel):
