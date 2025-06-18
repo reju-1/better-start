@@ -42,7 +42,7 @@ def authenticate_user(form_data: OAuth2PasswordRequestForm, session: Session) ->
         )
 
     member = session.exec(
-        select(models.CompanyMember).where(models.CompanyMember.user_id == user.id)
+        select(models.CompanyMember).where(models.CompanyMember.user_id == user.email)
     ).first()
 
     token_data = {

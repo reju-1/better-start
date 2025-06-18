@@ -1,52 +1,32 @@
 from sqlmodel import SQLModel, Field
+from pydantic import EmailStr
 from typing import Optional
 from datetime import datetime
-from enum import Enum
-
-
-class MemberRole(str, Enum):
-    ADMIN = "Admin"
-    MEMBER = "Member"
-
-
-class Status(str, Enum):
-    ACTIVE = "Active"
-    INACTIVE = "Inactive"
-    PENDING = "Pending"
+from src.enums import MemberRole
 
 
 class Company(SQLModel, table=True):
     """Represents a company entity"""
 
-    # Primary Key
+    # Primary Key & Foreign Key
     id: Optional[int] = Field(default=None, primary_key=True)
-
-    # Foreign Key
-    user_id: int = Field(foreign_key="user.id")
+    user_id: EmailStr = Field(foreign_key="user.email")
 
     # Basic Info
     name: str = Field(max_length=255)
-    logo_url: str = Field(max_length=255)
     location: str = Field(max_length=255)
     industry_type: str = Field(max_length=255)
     founding_year: int
-    created_at: datetime
 
-    # Branding
-    primary_color: str = Field(max_length=255)
-    secondary_color: str = Field(max_length=255)
-
-    # Web & Marketing
-    website_url: str = Field(max_length=255)
-
-    # Company Philosophy
-    problem_solve: str
-    how_work: str
-
-    # Optional Metrics
+    # Optional
+    problem_solve: Optional[str]
+    how_work: Optional[str]
+    primary_color: Optional[str] = Field(max_length=255)
+    secondary_color: Optional[str] = Field(max_length=255)
+    website_url: Optional[str] = Field(max_length=255)
     monthly_target: Optional[int] = None
-
-    status: Status = Field(default=Status.PENDING)
+    logo_url: Optional[str] = Field(default=None, max_length=255)
+    created_at: datetime = Field(default_factory=datetime.now)
 
 
 class CompanyMember(SQLModel, table=True):
@@ -56,7 +36,7 @@ class CompanyMember(SQLModel, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
 
     # Foreign Keys
-    user_id: int = Field(foreign_key="user.id")
+    user_id: EmailStr = Field(foreign_key="user.email")
     company_id: int = Field(foreign_key="company.id")
 
     # Role & Position
@@ -65,6 +45,3 @@ class CompanyMember(SQLModel, table=True):
 
     # Optional Compensation
     salary: Optional[float] = None
-
-    # Membership Status
-    status: Status = Field(default=Status.PENDING)

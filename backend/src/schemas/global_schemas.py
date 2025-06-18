@@ -1,5 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, HttpUrl, Field, EmailStr
+from src.enums import MemberRole
 
 
 # Generic response message
@@ -23,4 +24,4 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: EmailStr
     company_id: Optional[int] = None
-    role: Optional[str] = None
+    role: Optional[MemberRole] = None
