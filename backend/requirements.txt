@@ -6,6 +6,7 @@ httpx
 sqlmodel
 pydantic[email,timezone]
 pydantic-settings
+python-multipart
 
 
 # ========== SDK ============

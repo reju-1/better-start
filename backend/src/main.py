@@ -5,7 +5,7 @@ from .core import init_db
 import src.models  # Temporary: For creating Tables
 
 # Router imports
-from .features import hr_router, hr_management
+from src import features
 
 
 @asynccontextmanager
@@ -29,5 +29,6 @@ def get_root():
     return {"Message": "Welcome To BetterStart"}
 
 
-# # Include the routers
-app.include_router(hr_router, prefix="/api", tags=["HR"])
+# Include the routers
+app.include_router(features.user_router, prefix="/api", tags=["User"])
+app.include_router(features.hr_router, prefix="/api", tags=["HR"])

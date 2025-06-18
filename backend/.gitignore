@@ -177,5 +177,3 @@ cython_debug/
 # Custom Files and Directories
 *.db
 X-Ignored/
-src/*/user/*
-
