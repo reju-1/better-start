@@ -1,7 +1,8 @@
-from fastapi import FastAPI
 from contextlib import asynccontextmanager
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
-from .core import init_db
+from .core import init_db, settings
 import src.models  # Temporary: For creating Tables
 
 # Router imports
@@ -20,6 +21,14 @@ app = FastAPI(
     title="Better-Start",
     version="1.0.0",
     lifespan=lifespan,
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[settings.frontend_url],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
 
