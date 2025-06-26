@@ -6,6 +6,7 @@ import src.models  # Temporary: For creating Tables
 
 # Router imports
 from src import features
+from src.features.kanban import project_router, task_router  # Add this import
 
 
 @asynccontextmanager
@@ -33,3 +34,5 @@ def get_root():
 app.include_router(features.user_router, prefix="/api", tags=["User"])
 app.include_router(features.company_router, prefix="/api", tags=["Company"])
 app.include_router(features.hr_router, prefix="/api", tags=["HR"])
+app.include_router(project_router, prefix="/api/kanban", tags=["Kanban"]) 
+app.include_router(task_router, prefix="/api/kanban", tags=["Kanban"])  
