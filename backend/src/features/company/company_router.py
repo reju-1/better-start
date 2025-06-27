@@ -12,6 +12,7 @@ from src.security import oauth2
 from src.schemas import Message, TokenData
 from src.utils.jwt_utils import create_jwt_token, decode_jwt_token
 from . import company_schemas as schema
+from . import company_services
 
 router = APIRouter(prefix="/company")
 DBSession = Annotated[Session, Depends(get_session)]
@@ -137,3 +138,50 @@ def join_company_via_invite(
     session.commit()
 
     return Message(message=f"You have successfully joined the company: {company.name}")
+
+
+@router.get("/{company_id}", response_model=schema.CompanyCreate)
+def read_company(
+    session: DBSession,
+    user: TokenData = Depends(oauth2.get_current_user),
+):
+    """
+    Get company details by company_id if user is associated with it.
+    """
+    # Check association
+    member = session.exec(
+        select(models.CompanyMember).where(
+            models.CompanyMember.user_id == user.email,
+        )
+    ).first()
+    if not member:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not associated with this company.",
+        )
+    company = company_services.get_company_by_id(session, user)
+    return company
+
+
+@router.put("/{company_id}", response_model=schema.CompanyCreate)
+def update_company(
+    update_data: schema.CompanyCreate,
+    session: DBSession,
+    user: TokenData = Depends(oauth2.get_current_user),
+):
+    """
+    Update company details by company_id if user is the owner/admin.
+    """
+    # Check association
+    member = session.exec(
+        select(models.CompanyMember).where(
+            models.CompanyMember.user_id == user.email,
+        )
+    ).first()
+    if not member:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not associated with this company.",
+        )
+    company = company_services.update_company_by_id(session, update_data, user)
+    return company
