@@ -12,7 +12,7 @@ const page = () => {
       {/* <!-- Right Half: Illustration --> */}
       <div className="w-1/2 flex items-center justify-center">
         <Image
-          src="https://i.ibb.co/q3x8dTqf/register-illustration.png"
+          src="https://i.ibb.co/RG9qhddc/register-illustration.jpg"
           alt="Login Illustration"
           className="w-full px-6"
           width={1000}
