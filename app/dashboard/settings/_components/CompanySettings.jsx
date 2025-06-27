@@ -11,6 +11,12 @@ import Image from "next/image";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { useRegisterCompanyMutation } from "../../../../redux/api/companyApi";
+import { useRouter } from "next/navigation";
+import { logout } from "../../../../actions/auth";
+import { removeFromLocalStorage } from "../../../../utils/local-storage";
+import { useGetMycompanyQuery } from "../../../../redux/api/companyApi";
+import { useUpdateCompanyInfoMutation } from "../../../../redux/api/companyApi";
+import LoadingSpinner from "../../../../components/common/LoadingSpinner";
 
 const companySchema = z.object({
   logo_url: z.any(),
@@ -19,17 +25,46 @@ const companySchema = z.object({
   industry_type: z.string().min(1, "Industry type is required"),
   founding_year: z.string().min(1, "Founding year is required"),
   website_url: z.string().url().optional(),
-  monthly_target: z.number().min(0),
+  monthly_target: z.string().min(0),
   problem_solve: z.string().optional(),
   how_work: z.string().optional(),
 });
 
-const CompanySettings = () => {
+const CompanySettings = ({ companyId }) => {
+  const router = useRouter();
   const [imagePreview, setImagePreview] = useState(
     "https://preline.co/assets/img/160x160/img1.jpg"
   );
 
   const [registerCompany] = useRegisterCompanyMutation();
+  const [updateCompanyInfo] = useUpdateCompanyInfoMutation();
+  const { data: companyData, isLoading } = useGetMycompanyQuery({
+    id: companyId,
+  });
+
+  const defaultValues = companyData
+    ? {
+        logo_url: companyData.logo_url || null,
+        name: companyData.name || "",
+        location: companyData.location || "",
+        industry_type: companyData.industry_type || "",
+        founding_year: companyData.founding_year?.toString() || "",
+        website_url: companyData.website_url || "",
+        monthly_target: companyData.monthly_target.toString() || 0,
+        problem_solve: companyData.problem_solve || "",
+        how_work: companyData.how_work || "",
+      }
+    : {
+        logo_url: null,
+        name: "",
+        location: "",
+        industry_type: "",
+        founding_year: "",
+        website_url: "",
+        monthly_target: 0,
+        problem_solve: "",
+        how_work: "",
+      };
 
   const handleImageChange = (file) => {
     if (file) {
@@ -39,7 +74,9 @@ const CompanySettings = () => {
   };
 
   const handleSubmit = async (data) => {
-    const toastId = toast.loading("Creating company...");
+    const toastId = toast.loading(
+      companyId ? "Updating company..." : "Creating company..."
+    );
 
     try {
       const formData = {
@@ -56,17 +93,36 @@ const CompanySettings = () => {
         secondary_color: "#E9D7FE",
       };
 
-      const response = await registerCompany(formData).unwrap();
-      console.log("Company created:", response);
+      if (companyId) {
+        await updateCompanyInfo({ data: formData, id: companyId }).unwrap();
+        toast.success("Company updated successfully!", { id: toastId });
+        window.location.reload();
+      } else {
+        await registerCompany(formData).unwrap();
+        toast.success("Company created successfully!", { id: toastId });
 
-      toast.success("Company created successfully!", { id: toastId });
+        try {
+          removeFromLocalStorage(process.env.NEXT_PUBLIC_AUTH_KEY);
+          await logout();
+          router.push("/login");
+        } catch (logoutError) {
+          console.error("Logout failed:", logoutError);
+        }
+      }
     } catch (error) {
-      console.error("Failed to create company:", error);
-      toast.error("Failed to create company. Please try again.", {
-        id: toastId,
-      });
+      console.error("Failed to handle company data:", error);
+      toast.error(
+        `Failed to ${
+          companyId ? "update" : "create"
+        } company. Please try again.`,
+        { id: toastId }
+      );
     }
   };
+
+  if (isLoading) {
+    return <LoadingSpinner size="large" />;
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-xs p-4 sm:p-7">
@@ -83,17 +139,7 @@ const CompanySettings = () => {
           console.error("Form validation errors:", errors);
         }}
         resolver={zodResolver(companySchema)}
-        defaultValues={{
-          logo_url: null,
-          name: "",
-          location: "",
-          industry_type: "",
-          founding_year: "",
-          website_url: "",
-          monthly_target: 0,
-          problem_solve: "",
-          how_work: "",
-        }}
+        defaultValues={defaultValues}
       >
         <div className="grid sm:grid-cols-12 gap-2 sm:gap-6">
           {/* Company Logo */}

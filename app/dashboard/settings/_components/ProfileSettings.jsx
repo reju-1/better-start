@@ -51,7 +51,7 @@ const ProfileSettings = () => {
         phone: data.phone,
         gender: data.gender,
         bio: data.bio || "",
-        profile_photo: data.profile_photo,
+        profile_photo: "https://i.ibb.co/zW6RJFbs/Frame-63.png",
       };
 
       const response = await updateProfile(formData).unwrap();
