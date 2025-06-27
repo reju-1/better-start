@@ -7,8 +7,8 @@ export const baseApi = createApi({
   baseQuery: axiosBaseQuery({
     baseUrl: process.env.NEXT_PUBLIC_API_URL,
   }),
-  endpoints: () => ({}),
   tagTypes: tagTypesList,
+  endpoints: () => ({}),
 });
 
 export default baseApi;

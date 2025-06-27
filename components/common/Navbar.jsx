@@ -69,7 +69,7 @@ const Navbar = () => {
         {/* Logo */}
         <div className="flex-shrink-0">
           <Image
-            src="https://i.ibb.co/2YFVt16q/betterstart-logo.png"
+            src="https://i.ibb.co/KcwP41RL/betterstart-logo.png"
             alt="BetterStart"
             width={250}
             height={70}
