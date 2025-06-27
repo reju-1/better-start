@@ -31,14 +31,14 @@ const CompanySettings = () => {
 
   const [registerCompany] = useRegisterCompanyMutation();
 
-  const handleImageChange = (file: File | null) => {
+  const handleImageChange = (file) => {
     if (file) {
       const url = URL.createObjectURL(file);
       setImagePreview(url);
     }
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data) => {
     const toastId = toast.loading("Creating company...");
 
     try {
@@ -79,7 +79,7 @@ const CompanySettings = () => {
 
       <CustomForm
         onSubmit={handleSubmit}
-        onError={(errors: any) => {
+        onError={(errors) => {
           console.error("Form validation errors:", errors);
         }}
         resolver={zodResolver(companySchema)}

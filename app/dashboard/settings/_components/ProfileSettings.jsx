@@ -31,14 +31,14 @@ const ProfileSettings = () => {
 
   const [updateProfile] = useUpdateProfileMutation();
 
-  const handleImageChange = (file: File | null) => {
+  const handleImageChange = (file) => {
     if (file) {
       const url = URL.createObjectURL(file);
       setImagePreview(url);
     }
   };
 
-  const handleSubmit = async (data: any) => {
+  const handleSubmit = async (data) => {
     const toastId = toast.loading("Updating profile...");
 
     try {
@@ -77,7 +77,7 @@ const ProfileSettings = () => {
 
       <CustomForm
         onSubmit={handleSubmit}
-        onError={(errors: any) => {
+        onError={(errors) => {
           console.error("Form validation errors:", errors);
         }}
         resolver={zodResolver(profileSchema)}
