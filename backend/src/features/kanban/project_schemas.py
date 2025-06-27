@@ -7,7 +7,6 @@ from src.enums import Status, PriorityLevel
 class ProjectCreate(BaseModel):
     title: str = Field(..., max_length=255)
     description: str
-    company_id: int
     status: Status = Status.ACTIVE
     priority_level: PriorityLevel = PriorityLevel.HIGH
     due_date: date

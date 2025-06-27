@@ -12,7 +12,7 @@ class Project(SQLModel, table=True):
     company_id: int = Field(foreign_key="company.id")
     title: str = Field(max_length=255)
     description: Optional[str] = None
-    datastamp: date = Field(default_factory=date.today)
+    start_date: date = Field(default_factory=date.today)
     status: Status = Field(default=Status.ACTIVE)
     priority_level: PriorityLevel = Field(default=PriorityLevel.HIGH)
     due_date: date

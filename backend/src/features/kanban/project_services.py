@@ -99,6 +99,24 @@ def manage_project_status(project_id: int, status: str, session: Session, user: 
     session.refresh(project)
     return ProjectResponse.from_orm(project)
 
+def manage_project_priority_level(project_id: int, priority_level: str, session: Session, user: TokenData) -> ProjectResponse:
+    project = session.get(Project, project_id)
+    if not project:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Project not found."
+        )
+    if project.company_id != user.company_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You do not have permission to update this project."
+        )
+    project.priority_level = priority_level
+    session.add(project)
+    session.commit()
+    session.refresh(project)
+    return ProjectResponse.from_orm(project)
+
 # def add_member_to_project(project_id: int, user_id: int, session: Session, user: TokenData) -> None:
 #     project = session.get(Project, project_id)
 #     if not project:

@@ -1,12 +1,12 @@
 from fastapi import HTTPException, status
 from sqlmodel import Session, select
 from src.models.task_models import Task, TaskMember
-from .task_schemas import TaskCreate, TaskUpdate
+from .task_schemas import TaskCreate, TaskUpdate, TaskResponse
 from src.schemas import TokenData
+from src.enums import KanbanStatus
 from typing import List
 
 def create_task(project_id: int, task_data: TaskCreate, session: Session) -> Task:
-    # Optionally, check if user has permission to create task in the project
     data = task_data.dict()
     data['project_id'] = project_id
     new_task = Task(**data)
@@ -19,7 +19,6 @@ def get_task(task_id: int, session: Session, user: TokenData) -> Task:
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    # Optionally, check if user has access to this task
     return task
 
 def get_tasks(project_id: int, session: Session, user: TokenData) -> List[Task]:
@@ -30,7 +29,6 @@ def update_task(task_id: int, task_data: TaskUpdate, session: Session, user: Tok
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    # Optionally, check if user has permission to update
     task_data_dict = task_data.dict(exclude_unset=True)
     for key, value in task_data_dict.items():
         setattr(task, key, value)
@@ -42,15 +40,13 @@ def delete_task(task_id: int, session: Session, user: TokenData) -> None:
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    # Optionally, check if user has permission to delete
     session.delete(task)
     session.commit()
 
-def update_task_status(task_id: int, new_status: str, session: Session) -> Task:
+def update_task_status(task_id: int, new_status: KanbanStatus, session: Session) -> Task:
     task = session.get(Task, task_id)
     if not task:
         return None
-    # Optionally, check if user has permission to update status
     task.status = new_status
     session.commit()
     session.refresh(task)
@@ -59,7 +55,7 @@ def update_task_status(task_id: int, new_status: str, session: Session) -> Task:
 
 # --- Task Member Management ---
 
-def add_member_to_task(task_id: int, user_id: int, position: str, session: Session, user: TokenData) -> None:
+def add_member_to_task(task_id: int, user_id: int, work: str, session: Session, user: TokenData) -> None:
     task = session.get(Task, task_id)
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
@@ -68,7 +64,7 @@ def add_member_to_task(task_id: int, user_id: int, position: str, session: Sessi
     ).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="User is already a member of this task.")
-    new_member = TaskMember(task_id=task_id, user_id=user_id, position=position)
+    new_member = TaskMember(task_id=task_id, user_id=user_id, work=work)
     session.add(new_member)
     session.commit()
 
@@ -85,15 +81,4 @@ def get_task_members(task_id: int, session: Session, user: TokenData):
     members = session.exec(
         select(TaskMember).where(TaskMember.task_id == task_id)
     ).all()
-    return [{"user_id": m.user_id, "position": m.position} for m in members]
-
-def update_task_status(task_id: int, new_status: str, session: Session):
-    statement = select(Task).where(Task.id == task_id)
-    task = session.exec(statement).first()
-    if not task:
-        return None
-    task.status = new_status
-    session.add(task)
-    session.commit()
-    session.refresh(task)
-    return task
+    return [{"user_id": m.user_id, "work": m.work} for m in members]

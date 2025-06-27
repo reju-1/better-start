@@ -23,4 +23,9 @@ class PriorityLevel(str, Enum):
     MEDIUM = "Medium"
     HIGH = "High"
     CRITICAL = "Critical"
-    
+
+
+class KanbanStatus(str, Enum):
+    PENDING = "Pending"
+    INPROGRESS = "In-progress"
+    COMPLETED = "Completed"
