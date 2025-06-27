@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import CustomForm from "@/components/form/CustomForm";
-import CustomInput from "@/components/form/CustomInput";
-import Button from "@/components/ui/Button";
+import CustomForm from "../../../components/form/CustomForm";
+import CustomInput from "../../../components/form/CustomInput";
+import Button from "../../../components/ui/Button";
 import Link from "next/link";
 import toast from "react-hot-toast";
+import { useRegisterMutation } from "../../../redux/api/authApi";
+import { useRouter } from "next/navigation";
 
 // Registration validation schema
 const registerSchema = z
@@ -41,28 +42,37 @@ const registerSchema = z
   });
 
 const RegisterForm = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [register, { isLoading }] = useRegisterMutation();
+  const router = useRouter();
 
   const handleSubmit = async (data) => {
     const toastId = toast.loading("Creating your account...");
-    setIsLoading(true);
 
     try {
-      console.log("Registration data:", data);
+      const registrationData = {
+        name: data.username,
+        email: data.email,
+        password: data.password,
+        phone_no: data.phone,
+        dob: data.dob,
+      };
 
-      // Dummy API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const response = await register(registrationData).unwrap();
 
       toast.success("Registration successful!", {
         id: toastId,
       });
+
+      router.push("/login");
     } catch (error) {
       console.error("Registration failed:", error);
-      toast.error("Registration failed. Please try again.", {
+
+      const errorMessage =
+        error?.data?.message || "Registration failed. Please try again.";
+
+      toast.error(errorMessage, {
         id: toastId,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 

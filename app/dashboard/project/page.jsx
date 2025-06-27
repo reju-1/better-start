@@ -167,7 +167,7 @@ const page = () => {
                             Edit
                           </Link>
                           <Link
-                            href={`/dashboard/project/kanban`}
+                            href={`/dashboard/project/kanban/5`}
                             className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
                           >
                             Open

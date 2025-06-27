@@ -4,7 +4,7 @@ import { Controller, useFormContext } from "react-hook-form";
 const CustomFileInput = ({
   name,
   accept = "application/pdf,image/*",
-  maxSize = 5242880, // 5MB default
+  maxSize = 5242880,
   placeholder = "Choose file",
   className = "",
   required = false,
@@ -37,7 +37,6 @@ const CustomFileInput = ({
     setFileName(file.name);
     field.onChange(file);
 
-    // Call external onChange if provided
     if (externalOnChange) {
       externalOnChange(file);
     }
@@ -54,12 +53,10 @@ const CustomFileInput = ({
       name={name}
       control={control}
       render={({ field, fieldState: { error: fieldError } }) => {
-        // Determine if there's an error from either source
         const hasError = !!fieldError || !!error;
 
         return (
           <div className="space-y-1">
-            {/* Input with dynamic border color based on error state */}
             <div
               className={`relative ${
                 hasError ? "border-red-500 rounded-lg" : ""
@@ -72,7 +69,7 @@ const CustomFileInput = ({
                 accept={accept}
                 required={required}
                 onChange={(e) => handleFileChange(e, field)}
-                className={`block w-full border ${
+                className={`block w-full border cursor-pointer ${
                   hasError ? "border-red-500" : "border-gray-200"
                 } 
                   shadow-sm rounded-lg sm:text-sm focus:z-10 

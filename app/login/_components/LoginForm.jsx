@@ -1,18 +1,21 @@
 "use client";
 
-import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import CustomForm from "@/components/form/CustomForm";
-import CustomInput from "@/components/form/CustomInput";
-import Button from "@/components/ui/Button";
+import CustomInput from "../../../components/form/CustomInput";
+import Button from "../../../components/ui/Button";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import CustomForm from "../../../components/form/CustomForm";
+import { useLoginMutation } from "../../../redux/api/authApi";
+import { setToLocalStorage } from "../../../utils/local-storage";
+import { jwtDecode } from "jwt-decode";
+import { setAuthCookie } from "../../../actions/auth";
 
 // Login validation schema
 const loginSchema = z.object({
-  email: z
+  username: z
     .string()
     .min(1, { message: "Email is required" })
     .email({ message: "Invalid email format" }),
@@ -24,30 +27,42 @@ const loginSchema = z.object({
 
 const LoginForm = () => {
   const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
+  const [login, { isLoading }] = useLoginMutation();
 
   const handleSubmit = async (data) => {
     const toastId = toast.loading("Logging in...");
-    setIsLoading(true);
 
     try {
-      console.log("Login data:", data);
-
-      // Dummy API call
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-
-      toast.success("Login successful!", {
-        id: toastId,
+      const response = await login({
+        username: data.username,
+        password: data.password,
       });
 
-      router.push("/dashboard");
+      if (response?.data?.access_token) {
+        const decodedToken = jwtDecode(response.data.access_token);
+        const { company_id, role } = decodedToken;
+
+        await setAuthCookie(response.data.access_token);
+        setToLocalStorage(
+          process.env.NEXT_PUBLIC_AUTH_KEY,
+          response.data.access_token
+        );
+
+        toast.success("Login successful!", {
+          id: toastId,
+        });
+
+        if (company_id === null && role === null) {
+          router.push("/dashboard/settings");
+        } else {
+          router.push("/dashboard");
+        }
+      }
     } catch (error) {
       console.error("Login failed:", error);
-      toast.error("Login failed. Please try again.", {
+      toast.error(error?.message || "Login failed", {
         id: toastId,
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -58,7 +73,7 @@ const LoginForm = () => {
         onSubmit={handleSubmit}
         resolver={zodResolver(loginSchema)}
         defaultValues={{
-          email: "",
+          username: "",
           password: "",
         }}
       >
@@ -67,8 +82,8 @@ const LoginForm = () => {
         </h2>
 
         <CustomInput
-          name="email"
-          placeholder="Email Address / Username"
+          name="username"
+          placeholder="Email Address"
           type="email"
           required
           disabled={isLoading}

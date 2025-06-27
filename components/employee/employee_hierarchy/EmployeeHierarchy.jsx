@@ -1,6 +1,6 @@
 "use client";
 
-import Breadcrumb from "@/components/common/Breadcrumb";
+import Breadcrumb from "../../../components/common/Breadcrumb";
 import { useState } from "react";
 import EmployeeCard from "./EmployeeCard";
 import TeamLevelContainer from "./TeamLevelContainer";

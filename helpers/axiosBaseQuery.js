@@ -1,32 +1,32 @@
 import axiosInstance from "./axiosInstance";
+import qs from "qs";
 
 const axiosBaseQuery =
   ({ baseUrl } = { baseUrl: "" }) =>
   async ({ url, method, data, params, headers, contentType }) => {
     try {
+      let requestData = data;
+      let requestContentType = contentType || "application/json";
+
+      if (contentType === "application/x-www-form-urlencoded" && data) {
+        requestData = qs.stringify(data);
+      }
+
       const response = await axiosInstance({
         url: baseUrl + url,
         method,
-        data,
+        data: requestData,
         params,
         headers: {
-          "Content-Type": contentType || "Application/json",
+          "Content-Type": requestContentType,
           ...headers,
         },
       });
-      return {
-        data: response?.data,
-      };
+
+      return { data: response };
     } catch (axiosError) {
-      const error = axiosError;
       return {
-        error: {
-          status: error?.statusCode,
-          data: {
-            message: error?.message,
-            errorDetails: error?.errorDetails,
-          },
-        },
+        error,
       };
     }
   };

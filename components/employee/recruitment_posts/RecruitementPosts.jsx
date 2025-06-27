@@ -5,60 +5,106 @@ import PostsTable from "./PostsTable";
 import { Plus } from "lucide-react";
 import Link from "next/link";
 import Breadcrumb from "../../common/Breadcrumb";
+import { useGetJobPostsQuery } from "../../../redux/api/hrApi";
 
 const dummyPosts = [
   {
     id: 1,
+    company_id: 1,
     title: "Software Engineer",
-    employmentType: "Full Time",
-    description:
+    job_description:
       "Responsible for developing scalable web applications and collaborating with cross-functional teams.",
-    createdAt: "May 01, 2025",
-    endDate: "Jun 15, 2025",
+    role_apply: "Software Development",
+    prefered_engagement: "Remote",
+    skill_require: "React, Node.js, TypeScript",
+    skill_prefer: "AWS, Docker",
+    experience_level: "Mid Level",
+    location: "New York",
+    salary: "$80,000 - $120,000",
+    employement_type: "Full Time",
+    created_at: "2025-05-01T00:00:00Z",
+    end_date: "2025-06-15T00:00:00Z",
   },
   {
     id: 2,
+    company_id: 2,
     title: "HR Manager",
-    employmentType: "Part Time",
-    description:
+    job_description:
       "Oversee recruitment processes and employee relations for the organization.",
-    createdAt: "Apr 20, 2025",
-    endDate: "May 30, 2025",
+    role_apply: "Human Resources",
+    prefered_engagement: "On-site",
+    skill_require: "Recruitment, Employee Relations",
+    skill_prefer: "HRIS, ATS",
+    experience_level: "Senior Level",
+    location: "San Francisco",
+    salary: "$90,000 - $130,000",
+    employement_type: "Part Time",
+    created_at: "2025-04-20T00:00:00Z",
+    end_date: "2025-05-30T00:00:00Z",
   },
   {
     id: 3,
+    company_id: 3,
     title: "Data Analyst",
-    employmentType: "Contract",
-    description:
+    job_description:
       "Analyze business data and generate actionable insights for management.",
-    createdAt: "Mar 10, 2025",
-    endDate: "Apr 10, 2025",
+    role_apply: "Data Analysis",
+    prefered_engagement: "Remote",
+    skill_require: "SQL, Python, Excel",
+    skill_prefer: "Tableau, Power BI",
+    experience_level: "Entry Level",
+    location: "Austin",
+    salary: "$70,000 - $100,000",
+    employement_type: "Contract",
+    created_at: "2025-03-10T00:00:00Z",
+    end_date: "2025-04-10T00:00:00Z",
   },
   {
     id: 4,
+    company_id: 1,
     title: "Frontend Developer",
-    employmentType: "Full Time",
-    description:
+    job_description:
       "Build and maintain responsive web interfaces using modern frameworks and libraries.",
-    createdAt: "May 05, 2025",
-    endDate: "Jun 20, 2025",
+    role_apply: "Software Development",
+    prefered_engagement: "Remote",
+    skill_require: "HTML, CSS, JavaScript",
+    skill_prefer: "React, Vue.js",
+    experience_level: "Mid Level",
+    location: "New York",
+    salary: "$80,000 - $120,000",
+    employement_type: "Full Time",
+    created_at: "2025-05-05T00:00:00Z",
+    end_date: "2025-06-20T00:00:00Z",
   },
   {
     id: 5,
+    company_id: 2,
     title: "UX Designer",
-    employmentType: "Full Time",
-    description:
+    job_description:
       "Create user-centered designs and improve user experiences for our products.",
-    createdAt: "May 10, 2025",
-    endDate: "Jun 25, 2025",
+    role_apply: "Design",
+    prefered_engagement: "On-site",
+    skill_require: "Figma, Sketch, Adobe XD",
+    skill_prefer: "InVision, Marvel",
+    experience_level: "Senior Level",
+    location: "San Francisco",
+    salary: "$90,000 - $130,000",
+    employement_type: "Full Time",
+    created_at: "2025-05-10T00:00:00Z",
+    end_date: "2025-06-25T00:00:00Z",
   },
 ];
 
 const RecruitementPosts = () => {
-  const [posts, setPosts] = useState(dummyPosts);
   const [itemsPerPage, setItemsPerPage] = useState(9);
   const [currentPage, setCurrentPage] = useState(1);
 
+  // Remove API call temporarily
+  // const { data } = useGetJobPostsQuery({});
+  
+  // Use dummy data directly
+  const posts = dummyPosts;
+  
   // Calculate pagination values
   const totalItems = posts.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -82,7 +128,7 @@ const RecruitementPosts = () => {
   // Handle items per page change
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
+    setCurrentPage(1);
   };
 
   return (

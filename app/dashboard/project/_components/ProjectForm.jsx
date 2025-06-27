@@ -5,11 +5,8 @@ import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-
-import CustomForm from "../../../../components/form/CustomForm";
-import CustomInput from "../../../../components/form/CustomInput";
-import CustomSelect from "../../../../components/form/CustomSelect";
-import CustomTextarea from "../../../../components/form/CustomTextarea";
+import { useForm } from "react-hook-form";
+import AIProjectAssistant from "./AIProjectAssistant";
 
 // Validation schema using Zod
 const projectSchema = z.object({
@@ -27,9 +24,34 @@ const projectSchema = z.object({
     }),
 });
 
-const ProjectForm = ({ isUpdateMode = false, projectData = null, on }) => {
+const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  // Change the destructured form values to be referenced as 'form'
+  const form = useForm({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      projectName: projectData?.projectName || "",
+      description: projectData?.description || "",
+      category: projectData?.category || "",
+      status: projectData?.status || "",
+      priorityLevel: projectData?.priorityLevel || "",
+      dueDate: projectData?.dueDate || "",
+      endDate: projectData?.endDate || "",
+    },
+  });
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    setValue,
+    reset,
+    trigger,
+    watch,
+  } = form;
 
   const categoryOptions = [
     { value: "", label: "Select a category" },
@@ -57,53 +79,66 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null, on }) => {
     { value: "Low", label: "Low" },
     { value: "Medium", label: "Medium" },
     { value: "High", label: "High" },
-    { value: "Urgent", label: "Urgent" },
+    { value: "Critical", label: "Critical" },
   ];
 
-  const defaultValues = {
-    projectName: projectData?.projectName || "",
-    description: projectData?.description || "",
-    status: projectData?.status || "",
-    priorityLevel: projectData?.priorityLevel || "",
-    dueDate: projectData?.dueDate || "",
-    endDate: projectData?.endDate || "",
-    category: projectData?.category || "",
+  const handleGenerateContent = async (prompt) => {
+    setIsGenerating(true);
+    try {
+      const response = await generateProjectContent(prompt);
+      console.log("AI Response:", response);
+
+      // Update form fields with AI response
+      Object.entries(response).forEach(([key, value]) => {
+        if (key === "dueDate") {
+          const dueDate = new Date(value).toISOString().split("T")[0];
+          setValue(key, dueDate, { shouldValidate: true });
+
+          const endDate = new Date(value);
+          endDate.setMonth(endDate.getMonth() + 1);
+          setValue("endDate", endDate.toISOString().split("T")[0], {
+            shouldValidate: true,
+          });
+        } else {
+          setValue(key, value, { shouldValidate: true });
+        }
+      });
+
+      await trigger();
+      toast.success("Project details generated successfully!");
+    } catch (error) {
+      console.error("AI generation failed:", error);
+      toast.error(error.message || "Failed to generate project details");
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
-  const handleFormSubmit = async (data) => {
+  const onSubmit = async (data) => {
     const toastId = toast.loading(
       isUpdateMode ? "Updating project..." : "Creating project..."
     );
     setIsSubmitting(true);
 
     try {
-      // API call
+      // API call simulation
       await new Promise((resolve) => setTimeout(resolve, 1500));
-
       console.log("Project data:", data);
 
       toast.success(
         isUpdateMode
           ? "Project updated successfully!"
           : "Project created successfully!",
-        {
-          id: toastId,
-        }
+        { id: toastId }
       );
 
       router.push("/dashboard/project");
     } catch (error) {
       console.error("Project submission failed:", error);
-      toast.error("Something went wrong. Please try again.", {
-        id: toastId,
-      });
+      toast.error("Something went wrong. Please try again.", { id: toastId });
     } finally {
       setIsSubmitting(false);
     }
-  };
-
-  const handleError = (errors) => {
-    console.error(errors);
   };
 
   return (
@@ -124,199 +159,225 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null, on }) => {
                   : "Fill in the details below to create a new project."}
               </p>
             </div>
-            <CustomForm
-              onSubmit={handleFormSubmit}
-              onError={handleError}
-              defaultValues={defaultValues}
-              resolver={zodResolver(projectSchema)}
-              className="w-full"
-            >
-              {/* Form body */}
-              <div className="">
-                <div className="space-y-5 sm:space-y-6">
-                  {/* Project Details Section */}
-                  <div>
-                    {/* Project Name */}
-                    <div className="mb-4">
-                      <label
-                        htmlFor="projectName"
-                        className="block text-sm font-medium mb-2 text-gray-700"
-                      >
-                        Project Name <span className="text-red-500">*</span>
-                      </label>
-                      <CustomInput
-                        name="projectName"
-                        placeholder="Enter project name"
-                        required
-                        className="py-3 px-4"
-                      />
-                    </div>
 
-                    {/* Description */}
-                    <div className="mb-4">
-                      <label
-                        htmlFor="description"
-                        className="block text-sm font-medium mb-2 text-gray-700"
-                      >
-                        Description <span className="text-red-500">*</span>
-                      </label>
-                      <CustomTextarea
-                        name="description"
-                        placeholder="Describe the project in detail"
-                        required
-                        className="py-3 px-4"
-                        rows={4}
-                      />
-                      <p className=" text-sm text-gray-400">
-                        Provide a detailed description of the project goals,
-                        scope, and requirements.
+            <form onSubmit={handleSubmit(onSubmit)} className="w-full">
+              <div className="space-y-5 sm:space-y-6">
+                {/* Project Details Section */}
+                <div>
+                  {/* Project Name */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Project Name <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      {...register("projectName")}
+                      placeholder="Enter project name"
+                      className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                    />
+                    {errors.projectName && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.projectName.message}
                       </p>
-                    </div>
-
-                    {/* Category */}
-                    <div className="mb-4">
-                      <label
-                        htmlFor="category"
-                        className="block text-sm font-medium mb-2 text-gray-700"
-                      >
-                        Category <span className="text-red-500">*</span>
-                      </label>
-                      <CustomSelect
-                        name="category"
-                        options={categoryOptions}
-                        placeholder="Select a category"
-                        required
-                        className="py-3 px-4"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Project Status Section */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Status & Priority
-                    </h3>
-
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      {/* Status */}
-                      <div>
-                        <label
-                          htmlFor="status"
-                          className="block text-sm font-medium mb-2 text-gray-700"
-                        >
-                          Project Status <span className="text-red-500">*</span>
-                        </label>
-                        <CustomSelect
-                          name="status"
-                          options={statusOptions}
-                          placeholder="Select status"
-                          required
-                          className="py-3 px-4"
-                        />
-                      </div>
-
-                      {/* Priority Level */}
-                      <div>
-                        <label
-                          htmlFor="priorityLevel"
-                          className="block text-sm font-medium mb-2 text-gray-700"
-                        >
-                          Priority Level <span className="text-red-500">*</span>
-                        </label>
-                        <CustomSelect
-                          name="priorityLevel"
-                          options={priorityOptions}
-                          placeholder="Select priority"
-                          required
-                          className="py-3 px-4"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Timeline Section */}
-                  <div>
-                    <h3 className="text-lg font-semibold text-gray-800 mb-3">
-                      Project Timeline
-                    </h3>
-
-                    {/* Dates */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                      <div>
-                        <label
-                          htmlFor="dueDate"
-                          className="block text-sm font-medium mb-2 text-gray-700"
-                        >
-                          Start Date <span className="text-red-500">*</span>
-                        </label>
-                        <CustomInput
-                          name="dueDate"
-                          type="date"
-                          required
-                          className="py-3 px-4"
-                        />
-                      </div>
-                      <div>
-                        <label
-                          htmlFor="endDate"
-                          className="block text-sm font-medium mb-2 text-gray-700"
-                        >
-                          End Date <span className="text-red-500">*</span>
-                        </label>
-                        <CustomInput
-                          name="endDate"
-                          type="date"
-                          required
-                          className="py-3 px-4"
-                        />
-                      </div>
-
-                      <p className="text-sm text-gray-400">
-                        Ensure the end date is after the start date.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Form footer */}
-              <div className="p-4 sm:px-7">
-                <div className="flex flex-col sm:flex-row sm:justify-end gap-2">
-                  <button
-                    type="button"
-                    onClick={() => router.push("/dashboard/project")}
-                    className="py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-gray-300 font-medium bg-white text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all text-sm"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <span
-                          className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full"
-                          role="status"
-                          aria-label="loading"
-                        ></span>
-                        {isUpdateMode ? "Updating..." : "Creating..."}
-                      </>
-                    ) : isUpdateMode ? (
-                      "Update Project"
-                    ) : (
-                      "Create Project"
                     )}
-                  </button>
+                  </div>
+
+                  {/* Description */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Description <span className="text-red-500">*</span>
+                    </label>
+                    <textarea
+                      {...register("description")}
+                      rows={4}
+                      placeholder="Describe the project in detail"
+                      className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none resize-vertical disabled:opacity-50 disabled:pointer-events-none"
+                    />
+                    {errors.description && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.description.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Category */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium mb-2 text-gray-700">
+                      Category <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      {...register("category")}
+                      className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none appearance-none bg-white disabled:opacity-50 disabled:pointer-events-none"
+                    >
+                      {categoryOptions.map((option) => (
+                        <option
+                          key={option.value}
+                          value={option.value}
+                          className={option.value === "" ? "text-gray-500" : ""}
+                        >
+                          {option.label}
+                        </option>
+                      ))}
+                    </select>
+                    {errors.category && (
+                      <p className="text-sm text-red-500 mt-1">
+                        {errors.category.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                {/* Status & Priority Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Status & Priority
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Status <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        {...register("status")}
+                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none"
+                      >
+                        {statusOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.status && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.status.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Priority Level <span className="text-red-500">*</span>
+                      </label>
+                      <select
+                        {...register("priorityLevel")}
+                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none"
+                      >
+                        {priorityOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                      {errors.priorityLevel && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.priorityLevel.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Timeline Section */}
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-800 mb-3">
+                    Project Timeline
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Start Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        {...register("dueDate")}
+                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                      />
+                      {errors.dueDate && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.dueDate.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        End Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        {...register("endDate")}
+                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                      />
+                      {errors.endDate && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.endDate.message}
+                        </p>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </CustomForm>
+
+              {/* Form Footer */}
+              <div className="mt-6 flex flex-col sm:flex-row sm:justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => router.push("/dashboard/project")}
+                  className="py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-gray-300 font-medium bg-white text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-all text-sm"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <span className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" />
+                      {isUpdateMode ? "Updating..." : "Creating..."}
+                    </>
+                  ) : isUpdateMode ? (
+                    "Update Project"
+                  ) : (
+                    "Create Project"
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       </div>
+
+      <AIProjectAssistant
+        onGenerateContent={handleGenerateContent}
+        isGenerating={isGenerating}
+      />
     </>
   );
+};
+
+// Add this function to handle Gemini API calls
+const generateProjectContent = async (prompt) => {
+  try {
+    const response = await fetch("/api/generate-project", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ prompt }),
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.error || "Failed to generate content");
+    }
+
+    if (!data.projectName) {
+      throw new Error("Invalid response from AI");
+    }
+
+    return data;
+  } catch (error) {
+    console.error("AI generation error:", error);
+    throw new Error(error.message || "Failed to generate project content");
+  }
 };
 
 export default ProjectForm;

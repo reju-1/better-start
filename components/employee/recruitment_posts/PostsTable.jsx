@@ -16,23 +16,25 @@ const PostsTable = ({ posts }) => {
               scope="col"
               className="px-2 py-2 sm:px-6 sm:py-3 text-start w-[120px] sm:w-[175px] text-base sm:text-sm"
             >
-              <span className="font-semibold text-gray-800">
-                Employment Type
-              </span>
+              <span className="font-semibold text-gray-800">Role</span>
             </th>
             <th
               scope="col"
               className="px-2 py-2 sm:px-6 sm:py-3 text-start text-base sm:text-sm"
             >
-              <span className="font-semibold text-gray-800">
-                Job Description
-              </span>
+              <span className="font-semibold text-gray-800">Type</span>
             </th>
             <th
               scope="col"
               className="px-2 py-2 sm:px-6 sm:py-3 text-start text-base sm:text-sm"
             >
-              <span className="font-semibold text-gray-800">Created At</span>
+              <span className="font-semibold text-gray-800">Location</span>
+            </th>
+            <th
+              scope="col"
+              className="px-2 py-2 sm:px-6 sm:py-3 text-start text-base sm:text-sm"
+            >
+              <span className="font-semibold text-gray-800">Experience</span>
             </th>
             <th
               scope="col"
@@ -51,26 +53,31 @@ const PostsTable = ({ posts }) => {
                   <Link
                     href={"/dashboard/employee/recruitment_post_applicants"}
                   >
-                    <span className="block font-semibold text-gray-800">
+                    <span className="block font-semibold text-gray-800 underline">
                       {post.title}
                     </span>
                   </Link>
                 </td>
                 <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
+                  <span className="block text-gray-600">{post.role_apply}</span>
+                </td>
+                <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
                   <span className="block text-gray-600">
-                    {post.employmentType}
+                    {post.employement_type}
                   </span>
                 </td>
                 <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
-                  <span className="block text-gray-600 line-clamp-2">
-                    {post.description}
+                  <span className="block text-gray-600">{post.location}</span>
+                </td>
+                <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
+                  <span className="block text-gray-600">
+                    {post.experience_level}
                   </span>
                 </td>
                 <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
-                  <span className="block text-gray-600">{post.createdAt}</span>
-                </td>
-                <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
-                  <span className="block text-gray-600">{post.endDate}</span>
+                  <span className="block text-gray-600">
+                    {new Date(post.end_date).toLocaleDateString()}
+                  </span>
                 </td>
                 <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
                   <Link
@@ -85,7 +92,7 @@ const PostsTable = ({ posts }) => {
           ) : (
             <tr>
               <td
-                colSpan="6"
+                colSpan="7"
                 className="px-6 py-4 text-center text-sm text-gray-500"
               >
                 No recruitment posts found

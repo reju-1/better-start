@@ -1,6 +1,6 @@
+import StatsBox from "../../../components/dashboard/StatsBox";
 import Navbar from "../../../components/common/Navbar";
-import StatsBox from "@/components/dashboard/StatsBox";
-import EmployeeStatContainer from "@/components/employee/EmployeeStatContainer";
+import EmployeeStatContainer from "../../../components/employee/EmployeeStatContainer";
 import Image from "next/image";
 import Link from "next/link";
 

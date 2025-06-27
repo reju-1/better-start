@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getFromLocalStorage } from "@/utils/local-storage";
+import { getFromLocalStorage } from "../utils/local-storage";
 
 const axiosInstance = axios.create();
 
@@ -12,7 +12,10 @@ axiosInstance.interceptors.request.use(
   function (config) {
     const accessToken = getFromLocalStorage(process.env.NEXT_PUBLIC_AUTH_KEY);
     if (accessToken) {
-      config.headers.Authorization = accessToken;
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${accessToken}`,
+      };
     }
     return config;
   },
@@ -24,27 +27,10 @@ axiosInstance.interceptors.request.use(
 // Add a response interceptor
 axiosInstance.interceptors.response.use(
   function (response) {
-    const responseData = response.data;
-    const successResponse = {
-      success: true,
-      statusCode: responseData.statusCode,
-      message: responseData.message,
-      meta: responseData.meta,
-      data: responseData.data,
-    };
-    response.data = successResponse;
-    return response;
+    return response?.data;
   },
   async function (error) {
-    const errorResponse = {
-      success: false,
-      statusCode: error?.response?.data?.statusCode || 500,
-      message:
-        error?.response?.data?.message ||
-        "Something went wrong. Please try again.",
-      errorDetails: error?.response?.data?.errorDetails || {},
-    };
-    return Promise.reject(errorResponse);
+    return Promise.reject(error.response ? error.response.data : error);
   }
 );
 
