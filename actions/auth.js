@@ -15,3 +15,9 @@ export async function setAuthCookie(token) {
 
   return { success: true };
 }
+
+export async function logout() {
+  cookies().delete(process.env.NEXT_PUBLIC_AUTH_KEY);
+
+  return { success: true };
+}
