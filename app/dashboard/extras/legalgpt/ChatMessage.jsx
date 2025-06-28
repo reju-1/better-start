@@ -12,12 +12,15 @@ const ChatMessage = ({ message }) => {
     return (
       <div className="mt-4 flex flex-wrap gap-2">
         {content.suggestions.map((suggestion, index) => (
-          <button
+          <a
             key={index}
+            href="https://drive.google.com/uc?export=download&id=1ZVBWzsJPB5QT-wcwzPdm7ldrbqHppUnP"
+            target="_blank"
+            rel="noopener noreferrer"
             className="px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50"
           >
             {suggestion}
-          </button>
+          </a>
         ))}
       </div>
     );
@@ -45,7 +48,7 @@ const ChatMessage = ({ message }) => {
           )}
 
           <div className="flex-1">
-            <div className="text-sm">
+            <div className="text-sm markdown-table">
               <Markdown remarkPlugins={[remarkGfm]}>{content.text}</Markdown>
             </div>
 

@@ -15,7 +15,7 @@ const AIChatting = () => {
       role: "assistant",
       content: {
         text: "Hello! I'm an **expert AI Legal Advisor specializing in business law and corporate** in Bangladesh. How can I help you with your projects today?",
-        suggestions: ["Create a new project"],
+        suggestions: ["Download our curated legal documents PDF"],
       },
     },
   ]);
