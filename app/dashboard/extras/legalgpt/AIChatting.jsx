@@ -78,6 +78,14 @@ const AIChatting = () => {
                   },
                 ]);
 
+                // Collect all user queries so far, including the new one
+                const allUserQueries = [
+                  ...messages
+                    .filter((msg) => msg.role === "user")
+                    .map((msg) => msg.content.text),
+                  text,
+                ];
+
                 // Call FastAPI backend
                 try {
                   const response = await fetch(
@@ -88,12 +96,11 @@ const AIChatting = () => {
                         "Content-Type": "application/json",
                         Accept: "application/json",
                       },
-                      body: JSON.stringify({ message: [text] }),
+                      body: JSON.stringify({ message: allUserQueries }),
                     }
                   );
                   const data = await response.json();
 
-                  // Assume the backend returns { "result": "AI response here" }
                   setMessages((prev) => [
                     ...prev,
                     {

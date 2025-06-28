@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Markdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import "../md-table.css";
 
 const ChatMessage = ({ message }) => {
   const { role, content } = message;
