@@ -4,7 +4,7 @@ from sqlmodel import Session, select
 
 from src import models
 from src.security import hashing, oauth2
-from src.schemas import Token
+from src.schemas import Token, TokenData
 from . import user_schemas as schema
 
 
@@ -54,3 +54,15 @@ def authenticate_user(form_data: OAuth2PasswordRequestForm, session: Session) ->
     access_token = oauth2.create_access_token(token_data)
 
     return Token(access_token=access_token, token_type="bearer")
+
+
+def get_user_details(current_user: TokenData, session: Session):
+    """
+    Fetch user details for the authenticated user (without password).
+    """
+    user = session.exec(
+        select(models.User).where(models.User.email == current_user.email)
+    ).first()
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+    return user

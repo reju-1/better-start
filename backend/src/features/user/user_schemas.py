@@ -12,3 +12,15 @@ class UserCreate(BaseModel):
     # Optional fields
     phone_no: Optional[str] = Field(None, max_length=20, example="+8801701234678")
     dob: Optional[date] = Field(None, example="1990-05-15")
+
+
+class UserRead(BaseModel):
+    name: str
+    email: EmailStr
+    phone_no: Optional[str] = None
+    dob: Optional[date] = None
+    bio: Optional[str] = None
+    photo: Optional[str] = None
+
+    class Config:
+        orm_mode = True
