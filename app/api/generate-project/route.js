@@ -19,7 +19,7 @@ You must respond with ONLY a valid JSON object in this exact format (no addition
   "projectName": "string (max 100 chars)",
   "description": "detailed string",
   "category": "one of: Web Development, Mobile App, UI/UX Design, Branding, Marketing, Content Creation, SEO, Other",
-  "status": "Not Started",
+  "status": "Active",
   "priorityLevel": "one of: Low, Medium, High, Critical",
   "dueDate": "YYYY-MM-DD format date"
 }`,
