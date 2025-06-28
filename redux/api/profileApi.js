@@ -5,15 +5,23 @@ export const profileApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     updateProfile: build.mutation({
       query: (data) => ({
-        url: "/user/",
-        method: "PATCH",
+        url: "/user/update",
+        method: "PUT",
         data,
       }),
       invalidatesTags: [tagTypes.user],
+    }),
+
+    getMyProfile: build.query({
+      query: () => ({
+        url: "/user/details",
+        method: "GET",
+      }),
+      providesTags: [tagTypes.user],
     }),
   }),
 
   overrideExisting: false,
 });
 
-export const { useUpdateProfileMutation } = profileApi;
+export const { useUpdateProfileMutation, useGetMyProfileQuery } = profileApi;

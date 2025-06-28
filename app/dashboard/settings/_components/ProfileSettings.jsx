@@ -3,24 +3,23 @@
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import CustomInput from "../../../../components/form/CustomInput";
-import CustomRadioGroup from "../../../../components/form/CustomRadioGroup";
 import CustomTextarea from "../../../../components/form/CustomTextarea";
 import CustomFileInput from "../../../../components/form/CustomFileInput";
 import CustomForm from "../../../../components/form/CustomForm";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import toast from "react-hot-toast";
-import { useUpdateProfileMutation } from "../../../../redux/api/profileApi";
+import {
+  useUpdateProfileMutation,
+  useGetMyProfileQuery,
+} from "../../../../redux/api/profileApi";
 
 const profileSchema = z.object({
   profile_photo: z.any(),
-  first_name: z.string().min(1, "First name is required"),
-  last_name: z.string().min(1, "Last name is required"),
+  name: z.string().min(1, "Name is required"),
   email: z.string().email("Invalid email address"),
-  current_password: z.string().optional(),
-  new_password: z.string().optional(),
-  phone: z.string().min(1, "Phone number is required"),
-  gender: z.string(),
+  phone_no: z.string().min(1, "Phone number is required"),
+  dob: z.string().optional(),
   bio: z.string().optional(),
 });
 
@@ -29,7 +28,18 @@ const ProfileSettings = () => {
     "https://preline.co/assets/img/160x160/img1.jpg"
   );
 
+  // Get profile data
+  const { data: profileData, isLoading } = useGetMyProfileQuery();
   const [updateProfile] = useUpdateProfileMutation();
+  const formRef = useRef(null);
+
+  console.log(profileData);
+
+  useEffect(() => {
+    if (profileData?.profile_photo) {
+      setImagePreview(profileData.profile_photo);
+    }
+  }, [profileData]);
 
   const handleImageChange = (file) => {
     if (file) {
@@ -38,26 +48,24 @@ const ProfileSettings = () => {
     }
   };
 
+  // Update profile info
   const handleSubmit = async (data) => {
     const toastId = toast.loading("Updating profile...");
 
     try {
       const formData = {
-        first_name: data.first_name,
-        last_name: data.last_name,
-        email: data.email,
-        current_password: data.current_password || "",
-        new_password: data.new_password || "",
-        phone: data.phone,
-        gender: data.gender,
+        name: data.name,
+        phone_no: data.phone_no,
+        dob: data.dob || "",
         bio: data.bio || "",
-        profile_photo: "https://i.ibb.co/zW6RJFbs/Frame-63.png",
+        photo: "https://i.ibb.co/zW6RJFbs/Frame-63.png",
       };
 
-      const response = await updateProfile(formData).unwrap();
-      console.log("Profile updated:", response);
-
+      const res = await updateProfile(formData).unwrap();
+      console.log(res);
       toast.success("Profile updated successfully!", { id: toastId });
+
+      window.location.reload();
     } catch (error) {
       console.error("Failed to update profile:", error);
       toast.error("Failed to update profile. Please try again.", {
@@ -65,6 +73,34 @@ const ProfileSettings = () => {
       });
     }
   };
+
+  const defaultValues = profileData
+    ? {
+        profile_photo: null,
+        name: profileData.name || "",
+        email: profileData.email || "",
+        phone_no: profileData.phone_no || "",
+        dob: profileData.dob || "",
+        bio: profileData.bio || "",
+      }
+    : {
+        profile_photo: null,
+        name: "",
+        email: "",
+        phone_no: "",
+        dob: "",
+        bio: "",
+      };
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-xl shadow-xs p-4 sm:p-7">
+        <div className="flex items-center justify-center py-10">
+          <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-purple-700"></div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white rounded-xl shadow-xs p-4 sm:p-7">
@@ -76,22 +112,13 @@ const ProfileSettings = () => {
       </div>
 
       <CustomForm
+        ref={formRef}
         onSubmit={handleSubmit}
         onError={(errors) => {
           console.error("Form validation errors:", errors);
         }}
         resolver={zodResolver(profileSchema)}
-        defaultValues={{
-          profile_photo: null,
-          first_name: "",
-          last_name: "",
-          email: "",
-          current_password: "",
-          new_password: "",
-          phone: "",
-          gender: "male",
-          bio: "",
-        }}
+        defaultValues={defaultValues}
       >
         <div className="grid sm:grid-cols-12 gap-2 sm:gap-6">
           {/* Profile Photo */}
@@ -122,25 +149,23 @@ const ProfileSettings = () => {
             </div>
           </div>
 
-          {/* Full Name */}
+          {/* Name */}
           <div className="sm:col-span-3">
             <label className="inline-block text-sm text-gray-800 mt-2.5">
-              Full name
+              Name
               <span className="font-bold text-red-600">*</span>
             </label>
           </div>
           <div className="sm:col-span-9">
-            <div className="grid grid-cols-2 gap-4 w-full">
-              <CustomInput
-                name="first_name"
-                placeholder="First name"
-                required
-              />
-              <CustomInput name="last_name" placeholder="Last name" required />
-            </div>
+            <CustomInput
+              name="name"
+              placeholder="Your name"
+              required
+              className="w-full"
+            />
           </div>
 
-          {/* Email */}
+          {/* Email section */}
           <div className="sm:col-span-3">
             <label className="inline-block text-sm text-gray-800 mt-2.5">
               Email
@@ -152,28 +177,9 @@ const ProfileSettings = () => {
               type="email"
               placeholder="you@example.com"
               className="w-full"
+              disabled={true}
+              readOnly={true}
             />
-          </div>
-
-          {/* Password */}
-          <div className="sm:col-span-3">
-            <label className="inline-block text-sm text-gray-800 mt-2.5">
-              Password
-            </label>
-          </div>
-          <div className="sm:col-span-9">
-            <div className="grid grid-cols-2 gap-4 w-full">
-              <CustomInput
-                name="current_password"
-                type="password"
-                placeholder="Current password"
-              />
-              <CustomInput
-                name="new_password"
-                type="password"
-                placeholder="New password"
-              />
-            </div>
           </div>
 
           {/* Phone */}
@@ -187,27 +193,21 @@ const ProfileSettings = () => {
           </div>
           <div className="sm:col-span-9">
             <CustomInput
-              name="phone"
+              name="phone_no"
               placeholder="+x(xxx)xxx-xx-xx"
               required
               className="w-full"
             />
           </div>
 
-          {/* Gender */}
+          {/* Date of Birth */}
           <div className="sm:col-span-3">
             <label className="inline-block text-sm text-gray-800 mt-2.5">
-              Gender
+              Date of Birth
             </label>
           </div>
           <div className="sm:col-span-9">
-            <CustomRadioGroup
-              name="gender"
-              options={[
-                { value: "male", label: "Male" },
-                { value: "female", label: "Female" },
-              ]}
-            />
+            <CustomInput name="dob" type="date" className="w-full" />
           </div>
 
           {/* Bio */}
@@ -231,6 +231,7 @@ const ProfileSettings = () => {
           <button
             type="button"
             className="py-2 px-3 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50"
+            onClick={() => window.location.reload()}
           >
             Cancel
           </button>
