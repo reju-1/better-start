@@ -19,6 +19,7 @@ const AIChatting = () => {
       },
     },
   ]);
+  const [typingMessage, setTypingMessage] = useState(null); // For typing effect
   const messagesEndRef = useRef(null);
 
   const toggleSidebar = () => {
@@ -30,6 +31,35 @@ const AIChatting = () => {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages]);
+
+  useEffect(() => {
+    if (typingMessage) {
+      let current = "";
+      let i = 0;
+      const interval = setInterval(() => {
+        current += typingMessage.text[i];
+        setMessages((prev) => {
+          // Replace the last assistant message with the updated text
+          const lastIdx = prev.length - 1;
+          if (prev[lastIdx]?.role === "assistant") {
+            const updated = [...prev];
+            updated[lastIdx] = {
+              ...updated[lastIdx],
+              content: { ...updated[lastIdx].content, text: current },
+            };
+            return updated;
+          }
+          return prev;
+        });
+        i++;
+        if (i >= typingMessage.text.length) {
+          setTypingMessage(null);
+          clearInterval(interval);
+        }
+      }, 25); // Adjust speed here (ms per character)
+      return () => clearInterval(interval);
+    }
+  }, [typingMessage]);
 
   const handleNewChat = () => {
     setMessages([
@@ -68,7 +98,6 @@ const AIChatting = () => {
           <ChatInput
             onSendMessage={async (text) => {
               if (text.trim()) {
-                // Add user message immediately
                 setMessages([
                   ...messages,
                   {
@@ -78,7 +107,6 @@ const AIChatting = () => {
                   },
                 ]);
 
-                // Collect all user queries so far, including the new one
                 const allUserQueries = [
                   ...messages
                     .filter((msg) => msg.role === "user")
@@ -86,7 +114,6 @@ const AIChatting = () => {
                   text,
                 ];
 
-                // Call FastAPI backend
                 try {
                   const response = await fetch(
                     "http://127.0.0.1:8000/ai_tools/document/gemini/ask_Startup/",
@@ -101,17 +128,18 @@ const AIChatting = () => {
                   );
                   const data = await response.json();
 
+                  // Add empty assistant message first, then animate
                   setMessages((prev) => [
                     ...prev,
                     {
                       id: Date.now() + 1,
                       role: "assistant",
-                      content: {
-                        text:
-                          data.answer || "Sorry, I couldn't get a response.",
-                      },
+                      content: { text: "" },
                     },
                   ]);
+                  setTypingMessage({
+                    text: data.answer || "Sorry, I couldn't get a response.",
+                  });
                 } catch (error) {
                   setMessages((prev) => [
                     ...prev,

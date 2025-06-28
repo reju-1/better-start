@@ -42,9 +42,11 @@ const ChatMessage = ({ message }) => {
         <div className="flex items-start">
           {!isUser && (
             <div className="flex-shrink-0 mr-3">
-              <div className="w-8 h-8 rounded bg-purple-600 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">AI</span>
-              </div>
+              <img
+                src="https://i.ibb.co/4ZG3Zq4n/bs-icon.png"
+                alt="bs-icon"
+                className="w-8 h-8 rounded"
+              />
             </div>
           )}
 
@@ -56,13 +58,7 @@ const ChatMessage = ({ message }) => {
             {!isUser && renderSuggestions()}
           </div>
 
-          {isUser && (
-            <div className="flex-shrink-0 ml-3">
-              <div className="w-8 h-8 rounded-full bg-gray-600 flex items-center justify-center">
-                <span className="text-white text-xs font-bold">U</span>
-              </div>
-            </div>
-          )}
+          {isUser && <div className="flex-shrink-0 ml-3"></div>}
         </div>
       </div>
     </div>
