@@ -54,3 +54,14 @@ def read_user_details(
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
+
+@router.put("/update", response_model=schema.UserUpdate)
+def update_user(
+    update_data: schema.UserUpdate,
+    session: DBSession,
+    current_user: TokenData = Depends(oauth2.get_current_user),
+):
+    """
+    Update the authenticated user's details.
+    """
+    return service.update_user_details(update_data, current_user, session)

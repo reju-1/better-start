@@ -24,3 +24,12 @@ class UserRead(BaseModel):
 
     class Config:
         orm_mode = True
+
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = Field(None, max_length=255)
+    phone_no: Optional[str] = Field(None, max_length=20)
+    dob: Optional[date] = None
+    bio: Optional[str] = None
+    photo: Optional[str] = None
+    password: str = Field(..., min_length=4, max_length=255)

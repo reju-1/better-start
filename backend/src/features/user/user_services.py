@@ -66,3 +66,19 @@ def get_user_details(current_user: TokenData, session: Session):
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
     return user
+
+
+def update_user_details(
+    update_data: schema.UserUpdate, current_user: TokenData, session: Session
+):
+    user = session.exec(
+        select(models.User).where(models.User.email == current_user.email)
+    ).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    for field, value in update_data.model_dump(exclude_unset=True).items():
+        setattr(user, field, value)
+    session.add(user)
+    session.commit()
+    session.refresh(user)
+    return user
