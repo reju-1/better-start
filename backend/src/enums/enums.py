@@ -29,3 +29,9 @@ class KanbanStatus(str, Enum):
     PENDING = "Pending"
     INPROGRESS = "In-progress"
     COMPLETED = "Completed"
+    
+    
+class SalesStatus(str, Enum):
+    PENDING = "Pending"
+    PAID = "Paid"
+    CANCELLED = "Cancelled"
