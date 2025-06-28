@@ -1,3 +1,4 @@
+import { tagTypes } from "../tag-types";
 import baseApi from "./baseApi";
 
 export const profileApi = baseApi.injectEndpoints({
@@ -8,6 +9,7 @@ export const profileApi = baseApi.injectEndpoints({
         method: "PATCH",
         data,
       }),
+      invalidatesTags: [tagTypes.user],
     }),
   }),
 

@@ -7,8 +7,9 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
 import AIProjectAssistant from "./AIProjectAssistant";
+import { useCreateProjectMutation } from "../../../../redux/api/projectApi";
 
-// Validation schema using Zod
+// Project validation schema
 const projectSchema = z.object({
   projectName: z.string().min(1, "Project name is required"),
   description: z.string().min(1, "Description is required"),
@@ -29,7 +30,8 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
-  // Change the destructured form values to be referenced as 'form'
+  const [createProject] = useCreateProjectMutation();
+
   const form = useForm({
     resolver: zodResolver(projectSchema),
     defaultValues: {
@@ -67,11 +69,9 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
 
   const statusOptions = [
     { value: "", label: "Select status" },
-    { value: "Not Started", label: "Not Started" },
-    { value: "In Progress", label: "In Progress" },
-    { value: "Under Review", label: "Under Review" },
-    { value: "Completed", label: "Completed" },
-    { value: "On Hold", label: "On Hold" },
+    { value: "Pending", label: "Pending" },
+    { value: "Active", label: "Active" },
+    { value: "Inactive", label: "Inactive" },
   ];
 
   const priorityOptions = [
@@ -121,9 +121,18 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
     setIsSubmitting(true);
 
     try {
-      // API call simulation
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      console.log("Project data:", data);
+      const formattedData = {
+        title: data.projectName,
+        description: data.description,
+        category: data.category,
+        status: data.status,
+        priority_level: data.priorityLevel,
+        due_date: data.dueDate,
+      };
+
+      const response = await createProject(formattedData).unwrap();
+
+      console.log(response);
 
       toast.success(
         isUpdateMode
@@ -143,9 +152,9 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
 
   return (
     <>
-      <div className="mt-4">
+      <div>
         {/* Main Form Section */}
-        <div className="max-w-4xl px-4 py-6 sm:px-6 lg:px-8 mx-auto">
+        <div className="max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto">
           {/* Form Card */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-7">
             {/* Form Header */}
@@ -369,10 +378,12 @@ const generateProjectContent = async (prompt) => {
       throw new Error(data.error || "Failed to generate content");
     }
 
+    // The field names here match our form fields
     if (!data.projectName) {
       throw new Error("Invalid response from AI");
     }
 
+    // Return the data directly since field names match our form
     return data;
   } catch (error) {
     console.error("AI generation error:", error);

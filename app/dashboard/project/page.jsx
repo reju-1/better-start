@@ -1,7 +1,52 @@
+"use client";
+
 import Link from "next/link";
 import Navbar from "../../../components/common/Navbar";
+import { useGetCompanyProjectsQuery } from "../../../redux/api/projectApi";
 
-const page = () => {
+const Page = () => {
+  const { data: projects, isLoading } = useGetCompanyProjectsQuery({});
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <>
+        <Navbar />
+        <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto mt-20">
+          <div className="text-center">Loading projects...</div>
+        </div>
+      </>
+    );
+  }
+
+  // Get priority badge color
+  const getPriorityBadgeColor = (priority) => {
+    switch (priority) {
+      case "High":
+        return "bg-red-100 text-red-800";
+      case "Medium":
+        return "bg-yellow-100 text-yellow-800";
+      case "Low":
+        return "bg-green-100 text-green-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  // Get status badge color
+  const getStatusBadgeColor = (status) => {
+    switch (status) {
+      case "Active":
+        return "bg-green-100 text-green-800";
+      case "Pending":
+        return "bg-yellow-100 text-yellow-800";
+      case "Inactive":
+        return "bg-gray-100 text-gray-800";
+      default:
+        return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -112,78 +157,90 @@ const page = () => {
                   </thead>
 
                   <tbody className="divide-y divide-gray-200">
-                    <tr className="bg-white hover:bg-gray-50">
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="text-sm text-gray-800 font-semibold">
-                            Website Redesign
-                          </span>
-                          <p className="text-sm text-gray-600">
-                            Redesign company website for better UX
-                          </p>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                            Web Development
-                          </span>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-red-100 text-red-800">
-                            High
-                          </span>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                            In Progress
-                          </span>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="text-sm text-gray-600">
-                            June 15, 2025
-                          </span>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-3">
-                          <span className="text-sm text-gray-600">
-                            Sept 15, 2025
-                          </span>
-                        </div>
-                      </td>
-                      <td className="h-px w-px whitespace-nowrap">
-                        <div className="px-6 py-1.5 flex flex-col sm:flex-row gap-2">
-                          <Link
-                            href={`/dashboard/project/1/edit`}
-                            className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
-                          >
-                            Edit
-                          </Link>
-                          <Link
-                            href={`/dashboard/project/kanban/5`}
-                            className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
-                          >
-                            Open
-                          </Link>
-                        </div>
-                      </td>
-                    </tr>
+                    {projects?.map((project) => (
+                      <tr
+                        key={project.id}
+                        className="bg-white hover:bg-gray-50"
+                      >
+                        <td className="h-px w-px">
+                          <div className="px-6 py-3">
+                            <span className="text-sm text-gray-800 font-semibold block mb-1">
+                              {project.title}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-3">
+                            <span className="inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                              {project.category}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-3">
+                            <span
+                              className={`inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium ${getPriorityBadgeColor(
+                                project.priority_level
+                              )}`}
+                            >
+                              {project.priority_level}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-3">
+                            <span
+                              className={`inline-flex items-center gap-1.5 py-0.5 px-2 rounded-full text-xs font-medium ${getStatusBadgeColor(
+                                project.status
+                              )}`}
+                            >
+                              {project.status}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-3">
+                            <span className="text-sm text-gray-600">
+                              {new Date().toLocaleDateString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-3">
+                            <span className="text-sm text-gray-600">
+                              {new Date(project.due_date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="h-px w-px whitespace-nowrap">
+                          <div className="px-6 py-1.5 flex flex-col sm:flex-row gap-2">
+                            <Link
+                              href={`/dashboard/project/${project.id}/edit`}
+                              className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
+                            >
+                              Edit
+                            </Link>
+                            <Link
+                              href={`/dashboard/project/kanban/${project.id}`}
+                              className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
+                            >
+                              Open
+                            </Link>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
                 {/* End Table */}
 
-                {/* Footer */}
+                {/* Footer with dynamic count */}
                 <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
                   <div>
                     <p className="text-sm text-gray-600">
-                      <span className="font-semibold text-gray-800">6</span>{" "}
+                      <span className="font-semibold text-gray-800">
+                        {projects?.length || 0}
+                      </span>{" "}
                       results
                     </p>
                   </div>
@@ -246,4 +303,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

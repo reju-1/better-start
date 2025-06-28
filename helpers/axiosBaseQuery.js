@@ -25,8 +25,12 @@ const axiosBaseQuery =
 
       return { data: response };
     } catch (axiosError) {
+      const err = axiosError;
       return {
-        error,
+        error: {
+          status: err.response?.status,
+          data: err.response?.data || err.message,
+        },
       };
     }
   };
