@@ -58,6 +58,7 @@ def update_project(project_id: int, project_data: ProjectUpdate, session: Sessio
         )
     update_data = project_data.model_dump(exclude_unset=True)
     update_data.pop("company_id", None)  # Prevent changing company_id
+    update_data.pop("id", None)          # Prevent changing id
     for key, value in update_data.items():
         setattr(project, key, value)
     session.add(project)
