@@ -21,3 +21,9 @@ class InvitationToken(BaseModel):
     company_id: int
     role: MemberRole
     position: str
+
+
+class CompanyMemberInfo(BaseModel):
+    id: int
+    name: str
+    position: str

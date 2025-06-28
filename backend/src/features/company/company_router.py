@@ -14,6 +14,8 @@ from src.utils.jwt_utils import create_jwt_token, decode_jwt_token
 from . import company_schemas as schema
 from . import company_services
 
+from src.enums import MemberRole
+
 router = APIRouter(prefix="/company")
 DBSession = Annotated[Session, Depends(get_session)]
 
@@ -49,7 +51,7 @@ def create_company(
     company_member = models.CompanyMember(
         user_id=user.email,
         company_id=new_company.id,
-        role=models.MemberRole.ADMIN,
+        role=MemberRole.ADMIN,
         position="Founder",  # default or from request
     )
     session.add(company_member)
@@ -185,3 +187,30 @@ def update_company(
         )
     company = company_services.update_company_by_id(session, update_data, user)
     return company
+
+
+@router.get("/company/members", response_model=list[schema.CompanyMemberInfo])
+def list_company_members(
+    session: DBSession,
+    user: TokenData = Depends(oauth2.get_current_user),
+):
+    # Ensure user is in a company
+    if not user.company_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="You are not associated with any company.",
+        )
+    members = session.exec(
+        select(models.CompanyMember).where(models.CompanyMember.company_id == user.company_id)
+    ).all()
+    result = []
+    for m in members:
+        user_obj = session.exec(
+            select(models.User).where(models.User.email == m.user_id)
+        ).first()
+        result.append({
+            "id": user_obj.id if user_obj else None,  # Use integer ID
+            "name": user_obj.name if user_obj else "",
+            "position": m.position
+        })
+    return result
