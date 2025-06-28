@@ -5,8 +5,17 @@ export const projectApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
     createProject: build.mutation({
       query: (data) => ({
-        url: "/kanban/projects/",
+        url: "/project/projects/",
         method: "POST",
+        data,
+      }),
+      invalidatesTags: [tagTypes.project],
+    }),
+
+    updateProject: build.mutation({
+      query: ({ id, data }) => ({
+        url: `/project/projects/${id}`,
+        method: "PUT",
         data,
       }),
       invalidatesTags: [tagTypes.project],
@@ -14,7 +23,15 @@ export const projectApi = baseApi.injectEndpoints({
 
     getCompanyProjects: build.query({
       query: () => ({
-        url: `/kanban/projects/by_company/`,
+        url: `/project/projects/by_company/`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.project],
+    }),
+
+    getCompanyProjectDetails: build.query({
+      query: ({ id }) => ({
+        url: `/project/projects/${id}`,
         method: "GET",
       }),
       providesTags: [tagTypes.project],
@@ -24,5 +41,9 @@ export const projectApi = baseApi.injectEndpoints({
   overrideExisting: false,
 });
 
-export const { useCreateProjectMutation, useGetCompanyProjectsQuery } =
-  projectApi;
+export const {
+  useCreateProjectMutation,
+  useUpdateProjectMutation,
+  useGetCompanyProjectsQuery,
+  useGetCompanyProjectDetailsQuery,
+} = projectApi;
