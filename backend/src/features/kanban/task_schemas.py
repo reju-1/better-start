@@ -34,4 +34,13 @@ class TaskResponse(BaseModel):
     due_date: Optional[date] = None
 
     class Config:
-        orm_mode = True
+        from_attributes = True  # <-- Pydantic v2 way
+
+
+class ProjectWithTasksResponse(BaseModel):
+    title: str
+    description: str | None = None
+    tasks: List[TaskResponse]
+
+    class Config:
+        from_attributes = True  # <-- Add this for consistency
