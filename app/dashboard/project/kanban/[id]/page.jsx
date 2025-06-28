@@ -8,7 +8,11 @@ import toast from "react-hot-toast";
 
 import KanbanBoard from "./_components/KanbanBoard";
 import AddTaskModal from "./_components/AddTaskModal";
-import { TAG_COLORS, formatStatusLabel } from "./_components/kanbanConstants";
+import { formatStatusLabel } from "./_components/kanbanConstants";
+import {
+  useGetKanbanTasksQuery,
+  useCreateProjectTaskMutation,
+} from "../../../../../redux/api/projectApi";
 
 const KanbanPage = () => {
   const params = useParams();
@@ -16,6 +20,7 @@ const KanbanPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   const [projectName, setProjectName] = useState("");
+  const [projectDescription, setProjectDescription] = useState("");
   const [tasks, setTasks] = useState({
     pending: [],
     inProgress: [],
@@ -29,89 +34,118 @@ const KanbanPage = () => {
     dueDate: "",
   });
 
-  // Fetch project data and tasks
+  // Add the mutation hook
+  const [createProjectTask, { isLoading: isCreatingTask }] =
+    useCreateProjectTaskMutation();
+
+  // Get project and tasks data from API
+  const {
+    data: projectData,
+    isLoading: apiLoading,
+    error: apiError,
+    refetch,
+  } = useGetKanbanTasksQuery({ id: projectId });
+
+  // Process API data when it arrives
   useEffect(() => {
-    const fetchProjectData = async () => {
-      if (!projectId) {
-        setError("Project ID is missing");
-        setIsLoading(false);
-        return;
-      }
+    if (projectData) {
+      // Set project info
+      setProjectName(projectData.title || "Untitled Project");
+      setProjectDescription(projectData.description || "");
 
-      try {
-        // Simulate API call - would be replaced with real API call
-        await new Promise((resolve) => setTimeout(resolve, 800));
+      // Process tasks
+      if (projectData.tasks && Array.isArray(projectData.tasks)) {
+        const processedTasks = {
+          pending: [],
+          inProgress: [],
+          complete: [],
+        };
 
-        // Mock project data
-        setProjectName("Website Redesign");
+        projectData.tasks.forEach((task) => {
+          // Convert API task to UI task format
+          const uiTask = {
+            id: task.id.toString(),
+            title: task.title,
+            description: task.description,
+            assignees: task.assignee ? [task.assignee] : [],
+            tags: [task.priority_level],
+            dueDate: new Date(task.due_date).toLocaleDateString("en-US", {
+              month: "long",
+              day: "numeric",
+              year: "numeric",
+            }),
+            rawData: task, // Keep original data for reference
+          };
 
-        // Mock tasks data
-        setTasks({
-          pending: [
-            {
-              id: "task-1",
-              title: "Create wireframes for homepage",
-              assignees: [1, 2],
-              tags: ["Design", "Research"],
-              dueDate: "June 20, 2025",
-            },
-            {
-              id: "task-2",
-              title: "Content audit for existing pages",
-              assignees: [3],
-              tags: ["Research", "Writer"],
-              dueDate: "June 22, 2025",
-            },
-          ],
-          inProgress: [
-            {
-              id: "task-3",
-              title: "Design navigation menu",
-              assignees: [1, 4],
-              tags: ["Design", "Prototype"],
-              dueDate: "June 18, 2025",
-            },
-          ],
-          complete: [
-            {
-              id: "task-4",
-              title: "Stakeholder interviews",
-              assignees: [2, 3],
-              tags: ["Research"],
-              dueDate: "June 15, 2025",
-            },
-          ],
+          // Add to the appropriate column based on status
+          if (task.status === "Pending") {
+            processedTasks.pending.push(uiTask);
+          } else if (
+            task.status === "InProgress" ||
+            task.status === "In Progress"
+          ) {
+            processedTasks.inProgress.push(uiTask);
+          } else if (
+            task.status === "Complete" ||
+            task.status === "Completed"
+          ) {
+            processedTasks.complete.push(uiTask);
+          } else {
+            // Default to pending for unknown status
+            processedTasks.pending.push(uiTask);
+          }
         });
-      } catch (error) {
-        console.error("Failed to fetch project data:", error);
-        setError("Failed to load project data");
-        toast.error("Failed to load project data");
-      } finally {
-        setIsLoading(false);
+
+        setTasks(processedTasks);
       }
-    };
 
-    fetchProjectData();
-  }, [projectId]);
+      setIsLoading(false);
+    }
+  }, [projectData]);
 
-  // Handle drag start
+  // Update loading state based on API loading
+  useEffect(() => {
+    if (!apiLoading && apiError) {
+      setError("Failed to load project data. Please try again.");
+      setIsLoading(false);
+    }
+  }, [apiLoading, apiError]);
+
+  const handleAddTask = async (taskData) => {
+    try {
+      const res = await createProjectTask({
+        id: projectId,
+        data: taskData,
+      }).unwrap();
+
+      console.log(res);
+
+      toast.success("Task created successfully!");
+
+      refetch();
+
+      setShowAddTaskModal(false);
+    } catch (error) {
+      console.error("Failed to create task:", error);
+      toast.error("Failed to create task. Please try again.");
+    }
+  };
+
+  // Keep the existing handlers
   const handleDragStart = (e, task, status) => {
     setDraggingTask({ task, sourceStatus: status });
     e.currentTarget.classList.add("opacity-50");
   };
 
-  // Handle drag end
   const handleDragEnd = (e) => {
     e.currentTarget.classList.remove("opacity-50");
     setDraggingTask(null);
   };
 
-  // Handle drag over
   const handleDragOver = (e) => {
     e.preventDefault();
   };
 
-  // Handle drop
   const handleDrop = (e, targetStatus) => {
     e.preventDefault();
 
@@ -136,49 +170,15 @@ const KanbanPage = () => {
     toast.success(`Task moved to ${formatStatusLabel(targetStatus)}`);
   };
 
-  // Check if move is valid
   const isValidMove = (source, target) => {
     const statuses = ["pending", "inProgress", "complete"];
     const sourceIndex = statuses.indexOf(source);
     const targetIndex = statuses.indexOf(target);
 
     const isOneStep = Math.abs(targetIndex - sourceIndex) === 1;
-
     const isForwardOnly = targetIndex > sourceIndex;
 
     return isOneStep && isForwardOnly;
-  };
-
-  // Handle adding a new task
-  const handleAddTask = (e) => {
-    e.preventDefault();
-
-    if (!newTask.title.trim()) {
-      toast.error("Task title is required");
-      return;
-    }
-
-    const updatedTasks = { ...tasks };
-    const newTaskObj = {
-      id: `task-${Date.now()}`,
-      title: newTask.title,
-      assignees: [1], // Default assignee
-      tags: [newTask.tag],
-      dueDate: newTask.dueDate || "Not set",
-    };
-
-    updatedTasks.pending = [...updatedTasks.pending, newTaskObj];
-    setTasks(updatedTasks);
-
-    // Reset form and close modal
-    setNewTask({
-      title: "",
-      tag: "Design",
-      dueDate: "",
-    });
-    setShowAddTaskModal(false);
-
-    toast.success("New task added to To Do");
   };
 
   if (isLoading) {
@@ -193,7 +193,7 @@ const KanbanPage = () => {
             items={[
               { label: "Projects Overview", href: "/dashboard/project" },
               {
-                label: projectName,
+                label: projectName || "Project",
                 href: `/dashboard/project/${projectId}`,
               },
             ]}
@@ -240,48 +240,75 @@ const KanbanPage = () => {
           currentPage={projectName}
         />
 
-        {/* Main content */}
-        <div className="max-w-[95rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-8 mx-auto bg-gray-50">
-          {/* Header */}
-          <div className="flex justify-between items-center mb-8">
-            <div>
+        {/* Main content container */}
+        <div className="max-w-[95rem] mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          {/* Project Information Section */}
+          <div className="bg-gray-50 rounded-lg shadow-sm p-6 mb-6">
+            {/* Title and description section */}
+            <div className="mb-4">
               <h1 className="text-2xl font-semibold text-gray-900">
                 {projectName} - Kanban Board
               </h1>
+              {projectDescription && (
+                <p className="mt-2 text-sm text-gray-600">
+                  {projectDescription}
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Kanban board title */}
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <h2 className="text-lg font-medium text-gray-800">
+                Task Management
+              </h2>
               <p className="text-sm text-gray-600 mt-1">
                 Drag tasks between columns to update their status
               </p>
             </div>
-            <button
-              onClick={() => setShowAddTaskModal(true)}
-              className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center"
-            >
-              <svg
-                className="w-4 h-4 mr-2"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-gray-500 bg-gray-100 py-1 px-2 rounded">
+                {tasks.pending.length +
+                  tasks.inProgress.length +
+                  tasks.complete.length}{" "}
+                tasks
+              </span>
+
+              <button
+                onClick={() => setShowAddTaskModal(true)}
+                className="bg-purple-700 text-white px-4 py-2 rounded-lg text-sm font-medium flex items-center whitespace-nowrap hover:bg-purple-800 transition-colors"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-                />
-              </svg>
-              Add new task
-            </button>
+                <svg
+                  className="w-4 h-4 mr-2 flex-shrink-0"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                  />
+                </svg>
+                Add new task
+              </button>
+            </div>
           </div>
 
-          {/* Kanban board */}
-          <KanbanBoard
-            tasks={tasks}
-            handleDragStart={handleDragStart}
-            handleDragEnd={handleDragEnd}
-            handleDragOver={handleDragOver}
-            handleDrop={handleDrop}
-          />
+          {/* Kanban Board Section */}
+          <div className="bg-gray-50 rounded-lg shadow-sm p-6">
+            <KanbanBoard
+              tasks={tasks}
+              handleDragStart={handleDragStart}
+              handleDragEnd={handleDragEnd}
+              handleDragOver={handleDragOver}
+              handleDrop={handleDrop}
+            />
+          </div>
         </div>
       </div>
 
@@ -289,10 +316,7 @@ const KanbanPage = () => {
       <AddTaskModal
         isOpen={showAddTaskModal}
         onClose={() => setShowAddTaskModal(false)}
-        newTask={newTask}
-        setNewTask={setNewTask}
-        onSubmit={handleAddTask}
-        tagColors={TAG_COLORS}
+        onTaskCreated={() => refetch()}
       />
     </>
   );
