@@ -23,7 +23,6 @@ const SettingsPage = () => {
     setIsAdmin(isUserAdmin);
     setCompanyId(decodedToken?.company_id);
 
-    // Set initial tab based on URL and role
     const tabParam = searchParams.get("tab");
     if (tabParam === "company" && !isUserAdmin) {
       setActiveTab("profile");
