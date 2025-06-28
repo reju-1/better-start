@@ -19,8 +19,10 @@ passlib[bcrypt]
 
 
 # ======== AI ===========
-# openai
+google-generativeai
+python-multipart
 
 
 # ======== Others ===========
 pika
+PyPDF2
