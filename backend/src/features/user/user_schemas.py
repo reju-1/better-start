@@ -32,4 +32,4 @@ class UserUpdate(BaseModel):
     dob: Optional[date] = None
     bio: Optional[str] = None
     photo: Optional[str] = None
-    password: str = Field(..., min_length=4, max_length=255)
+    password: Optional[str] = Field(..., min_length=4, max_length=255)
