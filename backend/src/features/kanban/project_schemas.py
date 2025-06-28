@@ -18,6 +18,7 @@ class ProjectUpdate(BaseModel):
     description: Optional[str]
     status: Optional[Status]
     priority_level: Optional[PriorityLevel]
+    start_date: Optional[date]
     due_date: Optional[date]
     category: Optional[str]
 
@@ -29,6 +30,7 @@ class ProjectResponse(BaseModel):
     company_id: int
     status: Status
     priority_level: PriorityLevel
+    start_date: date
     due_date: date
     category: Optional[str]
 
