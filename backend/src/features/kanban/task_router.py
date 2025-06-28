@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from .task_schemas import TaskCreate, TaskResponse, TaskUpdate
 from .task_services import (
     create_task, get_task, update_task, delete_task, get_tasks,
-    add_member_to_task, remove_member_from_task, get_task_members, update_task_status
+    add_member_to_task, remove_member_from_task, update_task_status
 )
 from .task_schemas import ProjectWithTasksResponse, TaskResponse
 from src.models.project_models import Project
@@ -13,7 +13,10 @@ from src.core.db import get_session
 from src.security import oauth2
 from src.schemas import TokenData
 from src.enums import KanbanStatus
-from src.models.user_models import User  # adjust import as needed
+from src.models.user_models import User
+from src.models.company_models import CompanyMember
+from src.models.task_models import TaskMember  # Add this import
+
 
 router = APIRouter(prefix="/tasks")
 DBSession = Depends(get_session)
@@ -41,16 +44,26 @@ def read_task_by_task_id(task_id: int, session: Session = DBSession, user: Token
     task = get_task(task_id, session, user)
     if not task:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    return task
-
-@router.put("/{task_id}", response_model=TaskResponse)
-def update_existing_task(task_id: int, task: TaskUpdate, session: Session = DBSession, user: TokenData = Depends(oauth2.get_current_user)):
-    updated_task = update_task(task_id, task, session, user)
-    if not updated_task:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Task not found")
-    if user.role != "Admin":
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can create tasks.")
-    return updated_task
+    members = session.exec(
+        select(TaskMember).where(TaskMember.task_id == task.id)
+    ).all()
+    member_refs = []
+    for m in members:
+        company_member = session.exec(
+            select(CompanyMember).where(CompanyMember.user_id == m.user_id)
+        ).first()
+        user_obj = session.exec(
+            select(User).where(User.id == m.user_id)
+        ).first()
+        member_refs.append({
+            "id": m.user_id,
+            "name": user_obj.name if user_obj else "",
+            "work": company_member.work if company_member else m.work,
+            "photo": user_obj.photo if user_obj and hasattr(user_obj, "photo") else None
+        })
+    task_dict = task.dict()
+    task_dict["members"] = member_refs
+    return TaskResponse(**task_dict)
 
 @router.delete("/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_existing_task(task_id: int, session: Session = DBSession, user: TokenData = Depends(oauth2.get_current_user)):
@@ -68,10 +81,32 @@ def read_tasks_by_project(
     if not project:
         raise HTTPException(status_code=404, detail="Project not found")
     tasks = get_tasks(project_id, session, user)
+    task_responses = []
+    for task in tasks:
+        members = session.exec(
+            select(TaskMember).where(TaskMember.task_id == task.id)
+        ).all()
+        member_refs = []
+        for m in members:
+            company_member = session.exec(
+                select(CompanyMember).where(CompanyMember.user_id == m.user_id)
+            ).first()
+            user_obj = session.exec(
+                select(User).where(User.id == m.user_id)
+            ).first()
+            member_refs.append({
+                "id": m.user_id,
+                "name": user_obj.name if user_obj else "",
+                "work": company_member.work if company_member else m.work,
+                "photo": user_obj.photo if user_obj and hasattr(user_obj, "photo") else None
+            })
+        task_dict = task.dict()
+        task_dict["members"] = member_refs
+        task_responses.append(TaskResponse(**task_dict))
     return {
         "title": project.title,
         "description": project.description,
-        "tasks": [TaskResponse.from_orm(task) for task in tasks]
+        "tasks": task_responses
     }
 
 @router.patch("/{task_id}/status", status_code=status.HTTP_200_OK)
@@ -108,6 +143,14 @@ def remove_member(task_id: int, user_id: int, session: Session = DBSession, user
     remove_member_from_task(task_id, user_id, session, user)
     return {"detail": "Member removed from task successfully."}
 
-@router.get("/{task_id}/members", status_code=status.HTTP_200_OK)
-def get_members(task_id: int, session: Session = DBSession, user: TokenData = Depends(oauth2.get_current_user)):
-    return get_task_members(task_id, session, user)
+@router.patch("/{task_id}", status_code=status.HTTP_200_OK)
+def update_existing_task(
+    task_id: int,
+    task_update: TaskUpdate,
+    session: Session = DBSession,
+    user: TokenData = Depends(oauth2.get_current_user)
+):
+    if user.role != "Admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Only admins can update tasks.")
+    update_task(task_id, task_update, session, user)
+    return {"message": "Task updated successfully"}

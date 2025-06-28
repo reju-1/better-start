@@ -3,6 +3,15 @@ from pydantic import BaseModel, Field
 from datetime import date
 from src.enums import PriorityLevel, KanbanStatus
 
+class MemberIdRef(BaseModel):
+    id: int
+    work: str
+
+class MemberRef(BaseModel):
+    id: int
+    name: str
+    work: str
+    photo: str | None = None
 
 class TaskCreate(BaseModel):
     project_id: int
@@ -12,15 +21,6 @@ class TaskCreate(BaseModel):
     priority_level: PriorityLevel = PriorityLevel.HIGH
     assignee: Optional[int] = Field(None)
     due_date: Optional[date] = Field(None)
-
-
-class TaskUpdate(BaseModel):
-    title: Optional[str] = Field(None, max_length=255)
-    description: Optional[str] = Field(None)
-    status: Optional[KanbanStatus]
-    priority_level: Optional[PriorityLevel]
-    due_date: Optional[date] = Field(None)
-
 
 class TaskResponse(BaseModel):
     id: int
@@ -32,9 +32,10 @@ class TaskResponse(BaseModel):
     assignee: Optional[int]
     start_date: date
     due_date: Optional[date] = None
+    members: list[MemberRef] = Field(default_factory=list)  # <-- Add this
 
     class Config:
-        from_attributes = True  # <-- Pydantic v2 way
+        from_attributes = True
 
 
 class ProjectWithTasksResponse(BaseModel):
@@ -44,3 +45,14 @@ class ProjectWithTasksResponse(BaseModel):
 
     class Config:
         from_attributes = True  # <-- Add this for consistency
+        
+
+    
+class TaskUpdate(BaseModel):
+    title: Optional[str] = Field(None, max_length=255)
+    description: Optional[str] = Field(None)
+    status: Optional[KanbanStatus]
+    priority_level: Optional[PriorityLevel]
+    due_date: Optional[date] = Field(None)
+    members: Optional[list[MemberIdRef]] = Field(default_factory=list)  # <-- Only id required
+
