@@ -16,21 +16,33 @@ const projectSchema = z.object({
   category: z.string().min(1, "Category is required"),
   status: z.string().min(1, "Status is required"),
   priorityLevel: z.string().min(1, "Priority level is required"),
-  dueDate: z.string().min(1, "Start date is required"),
-  endDate: z
+  startDate: z
     .string()
-    .min(1, "End date is required")
+    .min(1, "Start date is required")
+    .refine((date) => new Date(date), {
+      message: "Please enter a valid date",
+    }),
+  dueDate: z
+    .string()
+    .min(1, "Due date is required")
     .refine((date) => new Date(date), {
       message: "Please enter a valid date",
     }),
 });
 
-const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
+const ProjectForm = ({
+  isUpdateMode = false,
+  projectData = null,
+  onSubmit: externalSubmit,
+  isSubmitting: externalIsSubmitting,
+}) => {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const [createProject] = useCreateProjectMutation();
+
+  const submitting = externalIsSubmitting || isSubmitting;
 
   const form = useForm({
     resolver: zodResolver(projectSchema),
@@ -40,8 +52,8 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
       category: projectData?.category || "",
       status: projectData?.status || "",
       priorityLevel: projectData?.priorityLevel || "",
+      startDate: projectData?.startDate || "",
       dueDate: projectData?.dueDate || "",
-      endDate: projectData?.endDate || "",
     },
   });
 
@@ -91,14 +103,9 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
       // Update form fields with AI response
       Object.entries(response).forEach(([key, value]) => {
         if (key === "dueDate") {
+          // Format date properly for the date input
           const dueDate = new Date(value).toISOString().split("T")[0];
           setValue(key, dueDate, { shouldValidate: true });
-
-          const endDate = new Date(value);
-          endDate.setMonth(endDate.getMonth() + 1);
-          setValue("endDate", endDate.toISOString().split("T")[0], {
-            shouldValidate: true,
-          });
         } else {
           setValue(key, value, { shouldValidate: true });
         }
@@ -115,9 +122,11 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
   };
 
   const onSubmit = async (data) => {
-    const toastId = toast.loading(
-      isUpdateMode ? "Updating project..." : "Creating project..."
-    );
+    if (externalSubmit) {
+      return externalSubmit(data);
+    }
+
+    const toastId = toast.loading("Creating project...");
     setIsSubmitting(true);
 
     try {
@@ -127,20 +136,13 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
         category: data.category,
         status: data.status,
         priority_level: data.priorityLevel,
+        start_date: data.startDate,
         due_date: data.dueDate,
       };
 
       const response = await createProject(formattedData).unwrap();
-
       console.log(response);
-
-      toast.success(
-        isUpdateMode
-          ? "Project updated successfully!"
-          : "Project created successfully!",
-        { id: toastId }
-      );
-
+      toast.success("Project created successfully!", { id: toastId });
       router.push("/dashboard/project");
     } catch (error) {
       console.error("Project submission failed:", error);
@@ -154,7 +156,7 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
     <>
       <div>
         {/* Main Form Section */}
-        <div className="max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto">
+        <div className="max-w-4xl px-4 sm:px-6 lg:px-8 mx-auto mb-10">
           {/* Form Card */}
           <div className="bg-white border border-gray-200 rounded-xl shadow-sm p-4 sm:p-7">
             {/* Form Header */}
@@ -290,9 +292,27 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
                     Project Timeline
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {/* Start Date field */}
                     <div>
                       <label className="block text-sm font-medium mb-2 text-gray-700">
                         Start Date <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        type="date"
+                        {...register("startDate")}
+                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
+                      />
+                      {errors.startDate && (
+                        <p className="text-sm text-red-500 mt-1">
+                          {errors.startDate.message}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Due Date field */}
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-gray-700">
+                        Due Date <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="date"
@@ -302,21 +322,6 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
                       {errors.dueDate && (
                         <p className="text-sm text-red-500 mt-1">
                           {errors.dueDate.message}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-2 text-gray-700">
-                        End Date <span className="text-red-500">*</span>
-                      </label>
-                      <input
-                        type="date"
-                        {...register("endDate")}
-                        className="py-3 px-4 block w-full border border-gray-200 rounded-md text-sm focus:border-purple-500 focus:ring-purple-500 focus:ring-2 focus:outline-none disabled:opacity-50 disabled:pointer-events-none"
-                      />
-                      {errors.endDate && (
-                        <p className="text-sm text-red-500 mt-1">
-                          {errors.endDate.message}
                         </p>
                       )}
                     </div>
@@ -335,10 +340,10 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
                 </button>
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={submitting}
                   className="py-2.5 px-4 inline-flex justify-center items-center gap-2 rounded-md border border-transparent font-semibold bg-purple-600 text-white hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-all text-sm"
                 >
-                  {isSubmitting ? (
+                  {submitting ? (
                     <>
                       <span className="animate-spin inline-block w-4 h-4 border-[3px] border-current border-t-transparent text-white rounded-full" />
                       {isUpdateMode ? "Updating..." : "Creating..."}
@@ -363,7 +368,6 @@ const ProjectForm = ({ isUpdateMode = false, projectData = null }) => {
   );
 };
 
-// Add this function to handle Gemini API calls
 const generateProjectContent = async (prompt) => {
   try {
     const response = await fetch("/api/generate-project", {
@@ -378,12 +382,10 @@ const generateProjectContent = async (prompt) => {
       throw new Error(data.error || "Failed to generate content");
     }
 
-    // The field names here match our form fields
     if (!data.projectName) {
       throw new Error("Invalid response from AI");
     }
 
-    // Return the data directly since field names match our form
     return data;
   } catch (error) {
     console.error("AI generation error:", error);
