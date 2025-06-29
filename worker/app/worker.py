@@ -3,12 +3,13 @@ import httpx
 from io import BytesIO
 from .config import settings
 from .utilities.pdf_reader import extract_text_from_pdf
-from .services.llm_service import analyze_cv_with_prompt_V1
+from .services.llm_service import analyze_cv_with_prompt_v2_gemini
 from .services.s3 import create_presigned_url
 from .utilities.schemas import CvReport, CvReportRequest
 
 
 def callback(ch, method, properties, body):
+
     try:
         data = CvReportRequest.model_validate_json(body)
         task_id = data.applicant_id
@@ -23,13 +24,8 @@ def callback(ch, method, properties, body):
         cv_text = extract_text_from_pdf(BytesIO(pdf_response.content))
 
         # Analyze with via LLM
-        result_dict = analyze_cv_with_prompt_V1(cv_text, job_prompt)
-        # result_dict = {
-        #     "rating": 4,
-        #     "remarks": "Very suitable candidate (^_^)",
-        # }
+        result_dict = analyze_cv_with_prompt_v2_gemini(cv_text, job_prompt)
         report = CvReport(**result_dict, applicant_id=task_id)  # validate response
-        print(f"LLM {report =}")
 
         # Post result to FastAPI
         response = httpx.post(settings.result_post_url, json=report.model_dump())

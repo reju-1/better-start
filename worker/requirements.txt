@@ -4,6 +4,8 @@ pypdf
 
 # =========== AI ===========
 openai
+google-generativeai
+python-multipart
 
 # =========== SDKs ===========
 boto3

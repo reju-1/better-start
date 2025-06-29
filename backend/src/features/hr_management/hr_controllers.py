@@ -55,7 +55,7 @@ def handle_job_application(application: schema.JobApply, session: Session):
         job_prompt=job_info.job_description,
         cv_pdf_url=application.cv_pdf,
     )
-    # publish_to_rabbitmq(payload.model_dump())
+    publish_to_rabbitmq(payload.model_dump())
     print(payload.model_dump())
 
     # DB
