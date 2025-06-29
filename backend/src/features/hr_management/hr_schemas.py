@@ -1,16 +1,28 @@
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, date
 from pydantic import BaseModel, EmailStr, ConfigDict, Field, conint, constr
+from src import enums
 
 
-class JobPost(BaseModel):
-    """Represents how a job post looks to the frontend/client"""
-
-    # Unique identifier for the job post
+class JobListingResponse(BaseModel):
     id: int
-
-    # The company that created the job post
     company_id: int
+    title: str
+    job_description: str
+    role_apply: str
+    skill_require: str
+    skill_prefer: str
+    experience_level: str
+    prefered_engagement: Optional[str] = None
+    location: str
+    salary: Optional[str] = None
+    employement_type: str
+    created_at: datetime
+    end_date: date
+
+
+class JobCreate(BaseModel):
+    """Represents how a job post looks to the frontend/client"""
 
     # Basic job info
     title: str
@@ -37,6 +49,12 @@ class JobPost(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class JobCreateResponse(BaseModel):
+    message: str
+    job_id: int
+    company_id: int
+
+
 class JobApply(BaseModel):
     """What the candidate fills in when applying for a job"""
 
@@ -53,6 +71,18 @@ class JobApplyResponse(BaseModel):
     message: str = "Application submitted successfully"  # Status message
     applicant_name: str  # For display
     job_id: int  # Job they applied to
+
+
+class CVSubmitResponse(BaseModel):
+    id: int
+    job_id: int
+    name: str
+    email: str
+    phone: str
+    cv_pdf: str
+    cv_rating: Optional[float]
+    cv_feedback: Optional[str]
+    status: enums.ApplicationStatus
 
 
 # === CV Request and Response Schemas ===
