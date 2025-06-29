@@ -10,7 +10,6 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const isComplete = status === "complete";
 
-  // Get status-specific styling
   const getStatusStyling = () => {
     switch (status) {
       case "todo":
@@ -24,19 +23,21 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
     }
   };
 
+  const handleDragStartEvent = (e) => {
+    e.dataTransfer.setData("taskId", task.id);
+    e.dataTransfer.setData("sourceStatus", status);
+    if (onDragStart) onDragStart(e, task, status);
+  };
+
   const handleEditTask = (updatedTask) => {
-    // Handle the task update logic here
     console.log("Updated task:", updatedTask);
   };
 
   const handleDelete = () => {
-    // Add delete confirmation logic here
     console.log("Delete task:", task.id);
   };
 
   const userRole = "admin";
-
-  // Add role-based permission check
   const canEdit = ["admin", "manager"].includes(userRole);
   const canDelete = ["admin"].includes(userRole);
 
@@ -48,7 +49,7 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
           ${isComplete ? "cursor-not-allowed" : "cursor-grab"}
           transition-all duration-200 hover:shadow-md`}
         draggable={!isComplete}
-        onDragStart={isComplete ? null : (e) => onDragStart(e, task, status)}
+        onDragStart={isComplete ? null : handleDragStartEvent}
         onDragEnd={isComplete ? null : onDragEnd}
       >
         <div className="flex items-center mb-3">
@@ -87,10 +88,8 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
           <span className="font-medium">Due:</span> {task.dueDate}
         </div>
 
-        {/* Status and Actions Section */}
         <div className="mt-3 pt-3 border-t border-gray-100">
-          <div className="flex items-center gap-2">
-            {/* View Button - Available to all */}
+          <div className="flex items-center justify-between gap-2">
             <button
               onClick={() => setIsViewModalOpen(true)}
               className="flex items-center justify-center px-3 py-1.5 text-xs font-medium text-gray-700 hover:text-gray-900 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors group"
@@ -117,7 +116,6 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
               View
             </button>
 
-            {/* Edit Button - Role-based */}
             {canEdit && !isComplete && (
               <button
                 onClick={() => setIsEditModalOpen(true)}
@@ -139,34 +137,10 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
                 Edit
               </button>
             )}
-
-            {/* Delete Button - Role-based */}
-            {canDelete && !isComplete && (
-              <button
-                onClick={handleDelete}
-                className="flex items-center justify-center px-3 py-1.5 text-xs font-medium text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 rounded-full transition-colors group ml-auto"
-              >
-                <svg
-                  className="w-3.5 h-3.5 mr-1.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  />
-                </svg>
-                Delete
-              </button>
-            )}
           </div>
         </div>
       </div>
 
-      {/* View Task Modal */}
       <ViewTaskModal
         isOpen={isViewModalOpen}
         onClose={() => setIsViewModalOpen(false)}
@@ -177,7 +151,6 @@ const TaskCard = ({ task, status, tagColors, onDragStart, onDragEnd }) => {
         }}
       />
 
-      {/* Edit Task Modal */}
       <EditTaskModal
         isOpen={isEditModalOpen}
         onClose={() => setIsEditModalOpen(false)}

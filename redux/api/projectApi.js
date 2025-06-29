@@ -53,6 +53,32 @@ export const projectApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.task],
     }),
+
+    getCompanyMembers: build.query({
+      query: () => ({
+        url: `/company/company/members`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.company, tagTypes.user, tagTypes.project],
+    }),
+
+    updateProjectTask: build.mutation({
+      query: ({ id, data }) => ({
+        url: `/kanban/tasks/${id}`,
+        method: "PATCH",
+        data,
+      }),
+      invalidatesTags: [tagTypes.task, tagTypes.project],
+    }),
+
+    updateProjectTaskStatus: build.mutation({
+      query: ({ id, status }) => ({
+        url: `/kanban/tasks/${id}/status`,
+        method: "PATCH",
+        params: { status },
+      }),
+      invalidatesTags: [tagTypes.task, tagTypes.project],
+    }),
   }),
 
   overrideExisting: false,
@@ -65,4 +91,7 @@ export const {
   useGetCompanyProjectDetailsQuery,
   useGetKanbanTasksQuery,
   useCreateProjectTaskMutation,
+  useGetCompanyMembersQuery,
+  useUpdateProjectTaskMutation,
+  useUpdateProjectTaskStatusMutation,
 } = projectApi;

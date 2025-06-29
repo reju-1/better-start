@@ -26,7 +26,6 @@ const KanbanColumn = ({
 
   const handleDragOver = (e) => {
     e.preventDefault();
-    // Only show highlight effect if dragging from different column
     if (dragSourceStatus !== status) {
       setIsDraggedOver(true);
       if (onDragOver) onDragOver(e);
@@ -40,7 +39,6 @@ const KanbanColumn = ({
 
   const handleDrop = (e) => {
     setIsDraggedOver(false);
-    // Only process drop if from different column
     if (dragSourceStatus !== status) {
       onDrop(e, status);
     }

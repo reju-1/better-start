@@ -49,7 +49,6 @@ const KanbanPage = () => {
   // Process API data when it arrives
   useEffect(() => {
     if (projectData) {
-      // Set project info
       setProjectName(projectData.title || "Untitled Project");
       setProjectDescription(projectData.description || "");
 
@@ -62,7 +61,6 @@ const KanbanPage = () => {
         };
 
         projectData.tasks.forEach((task) => {
-          // Convert API task to UI task format
           const uiTask = {
             id: task.id.toString(),
             title: task.title,
@@ -74,15 +72,15 @@ const KanbanPage = () => {
               day: "numeric",
               year: "numeric",
             }),
-            rawData: task, // Keep original data for reference
+            rawData: task,
           };
 
-          // Add to the appropriate column based on status
           if (task.status === "Pending") {
             processedTasks.pending.push(uiTask);
           } else if (
             task.status === "InProgress" ||
-            task.status === "In Progress"
+            task.status === "In Progress" ||
+            task.status === "In-progress"
           ) {
             processedTasks.inProgress.push(uiTask);
           } else if (
@@ -91,7 +89,6 @@ const KanbanPage = () => {
           ) {
             processedTasks.complete.push(uiTask);
           } else {
-            // Default to pending for unknown status
             processedTasks.pending.push(uiTask);
           }
         });
@@ -103,7 +100,6 @@ const KanbanPage = () => {
     }
   }, [projectData]);
 
-  // Update loading state based on API loading
   useEffect(() => {
     if (!apiLoading && apiError) {
       setError("Failed to load project data. Please try again.");
