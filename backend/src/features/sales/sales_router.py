@@ -1,9 +1,9 @@
-from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import Annotated, List
+from fastapi import APIRouter, Depends, HTTPException, status, Body
 from sqlmodel import Session
 from src.core.db import get_session
 from .sales_schemas import SalesCreate, SalesUpdate, SalesOut
-from .sales_services import create_sale, get_sale, update_sale, change_status
+from .sales_services import create_sale, update_sale, get_all_sales, change_status, get_sale
 from src.security import oauth2
 from src.schemas import TokenData
 
@@ -23,17 +23,6 @@ def create_sales(
 ):
     return create_sale(db, sale, user.company_id)
 
-@router.get("/{sale_id}", response_model=SalesOut)
-def read_sale(
-    sale_id: int,
-    db: DBSession,
-    user: TokenData = Depends(admin_required)
-):
-    db_sale = get_sale(db, sale_id, user.company_id)
-    if not db_sale:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
-    return db_sale
-
 @router.put("/{sale_id}", response_model=SalesOut)
 def update_sales(
     sale_id: int,
@@ -46,14 +35,34 @@ def update_sales(
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
     return db_sale
 
+@router.get("/", response_model=List[SalesOut])
+def read_all_sales(
+    db: DBSession,
+    user: TokenData = Depends(admin_required)
+):
+    return get_all_sales(db, user.company_id)
+
 @router.patch("/{sale_id}/status", response_model=SalesOut)
 def change_sales_status(
-    sale_id: int,
-    status: str,
     db: DBSession,
+    sale_id: int,
+    status: str = Body(..., embed=True),
     user: TokenData = Depends(admin_required)
 ):
     db_sale = change_status(db, sale_id, status, user.company_id)
     if not db_sale:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
     return db_sale
+
+@router.get("/{sale_id}", response_model=SalesOut)
+def read_sale(
+    sale_id: int,
+    db: DBSession,
+    user: TokenData = Depends(admin_required)
+):
+    db_sale = get_sale(db, sale_id, user.company_id)
+    if not db_sale:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Sale not found")
+    return db_sale
+
+
