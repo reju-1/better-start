@@ -11,6 +11,7 @@ from src.features.dashboard import dashb_routers   # Add this import
 from src.features.kanban import project_router, task_router  # Add this import
 from src.features.sales import sales_router  # Import the sales router
 from src.features.ai_tools.gemini_router import router as gemini_router  # Import the Gemini router
+from src.features.csv_analyzer.routers.csv_router import router as eda_router  # Import the CSV analyzer router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -54,4 +55,5 @@ app.include_router(task_router, prefix="/api/kanban", tags=["Project➜Kanban"])
   
 app.include_router(sales_router, prefix="/api/sales", tags=["Sales"])  
 
-app.include_router(gemini_router, prefix="/ai_tools/document", tags=["Gemini"])
+app.include_router(gemini_router, prefix="/ai_tools/document", tags=["Extras"])
+app.include_router(eda_router, prefix="/upload", tags=["Extras"])
