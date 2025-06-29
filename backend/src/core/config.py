@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     jwt_expiration_minutes: int = 60
 
     # ============ URLs ============
+    server_url: str
     frontend_url: str
     database_url: str
     rabbitmq_url: str
