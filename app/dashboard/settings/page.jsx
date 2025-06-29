@@ -18,7 +18,8 @@ const SettingsPage = () => {
   useEffect(() => {
     const decodedToken = getDecodedToken();
     const role = decodedToken?.role;
-    const isUserAdmin = role === "Admin";
+    const company_id = decodedToken?.company_id;
+    const isUserAdmin = role === "Admin" || company_id === null;
 
     setIsAdmin(isUserAdmin);
     setCompanyId(decodedToken?.company_id);
