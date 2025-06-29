@@ -81,9 +81,9 @@ const Navbar = () => {
         {/* Right links + avatar */}
         <div className="flex items-center space-x-6 text-[18px] font-medium">
           <Link
-            href="/dashboard/ai"
+            href="/dashboard/extras"
             className={`transition-colors ${
-              isActiveLink("/dashboard/ai")
+              isActiveLink("/dashboard/extras")
                 ? "text-primary font-semibold"
                 : "text-gray-700 hover:text-primary"
             }`}
