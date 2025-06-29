@@ -19,6 +19,7 @@ class Settings(BaseSettings):
 
     # =========== API keys =========
     open_ai: str
+    gemini_api_key: str
 
     # =========== AWS ==============
     aws_access_key_id: str
