@@ -6,10 +6,8 @@ const ChatSidebar = ({ isOpen, onClose, onNewChat }) => {
     <div
       className={`fixed inset-y-0 left-0 transform ${
         isOpen ? "translate-x-0" : "-translate-x-full"
-      } 
-      lg:translate-x-0 w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out z-50 flex flex-col h-full`}
+      } lg:translate-x-0 w-64 bg-white border-r border-gray-200 transition-transform duration-300 ease-in-out z-50 flex flex-col h-full`}
     >
-      {/* Close button for mobile */}
       <div className="lg:hidden absolute right-3 top-3">
         <button
           onClick={onClose}
@@ -31,7 +29,6 @@ const ChatSidebar = ({ isOpen, onClose, onNewChat }) => {
         </button>
       </div>
 
-      {/* Logo area */}
       <div className="flex items-center px-4 py-6">
         <Image
           src="https://i.ibb.co/KcwP41RL/betterstart-logo.png"
@@ -42,22 +39,47 @@ const ChatSidebar = ({ isOpen, onClose, onNewChat }) => {
         />
       </div>
 
-      {/* Navigation items */}
       <nav className="flex-1 overflow-y-auto px-4">
         <ul className="space-y-1.5">
           <li>
             <button
-              onClick={onNewChat}
-              className="flex items-center w-full gap-x-3 py-2 px-3 text-sm text-gray-700 rounded-lg hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100"
+              onClick={() => onNewChat("legal")}
+              className="flex items-center w-full gap-x-3 py-2 px-3 text-sm text-gray-700 rounded-lg hover:bg-gray-100"
             >
-              <Plus className="shrink-0 size-4" />
-              New chat
+              <MessageSquare className="shrink-0 size-4" />
+              LegalGPT
             </button>
+          </li>
+          <li>
+            <button
+              onClick={() => onNewChat("document")}
+              className="flex items-center w-full gap-x-3 py-2 px-3 text-sm text-gray-700 rounded-lg hover:bg-gray-100"
+            >
+              <HelpCircle className="shrink-0 size-4" />
+              DocumentGPT
+            </button>
+          </li>
+          <li>
+            <button
+              onClick={() => onNewChat("market")}
+              className="flex items-center w-full gap-x-3 py-2 px-3 text-sm text-gray-700 rounded-lg hover:bg-gray-100"
+            >
+              <Zap className="shrink-0 size-4" />
+              MarketGPT
+            </button>
+          </li>
+          <li>
+            <a
+              href="/dashboard/extras/ai_predict"
+              className="flex items-center gap-x-3 py-2 px-3 text-sm text-gray-700 rounded-lg hover:bg-gray-100"
+            >
+              <Save className="shrink-0 size-4" />
+              CSV Analytics
+            </a>
           </li>
         </ul>
       </nav>
 
-      {/* Upgrade CTA */}
       <div className="p-4 border-t border-gray-200">
         <a
           href="#"

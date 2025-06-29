@@ -8,23 +8,45 @@ import ChatInput from "./ChatInput";
 
 const AIChatting = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    // Initial welcome message from AI
-    {
-      id: 1,
-      role: "assistant",
-      content: {
-        text: "Hello! I'm an **expert AI Legal Advisor specializing in business law and corporate** in Bangladesh. How can I help you with your projects today?",
-        suggestions: ["Download our curated legal documents PDF"],
-      },
-    },
-  ]);
-  const [typingMessage, setTypingMessage] = useState(null); // For typing effect
+  const [activeGPT, setActiveGPT] = useState("legal"); // Modes: legal, document, market
+  const [messages, setMessages] = useState([]);
+  const [typingMessage, setTypingMessage] = useState(null);
   const messagesEndRef = useRef(null);
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   };
+
+  const getInitialMessage = (mode) => {
+    switch (mode) {
+      case "document":
+        return "Hello! I'm your **AI Document Advisor and Facilitator in Bangladesh**. How can I assist with document-related queries today?";
+      case "market":
+        return "Hello! I'm your **expert AI Market Advisor focused on startup and market trends in Bangladesh**. Ask me anything!";
+      case "legal":
+      default:
+        return "Hello! I'm an **expert AI Legal Advisor specializing in business law and corporate** in Bangladesh. How can I help you with your projects today?";
+    }
+  };
+
+  const handleNewChat = (mode = activeGPT) => {
+    setActiveGPT(mode);
+    setMessages([
+      {
+        id: Date.now(),
+        role: "assistant",
+        content: {
+          text: getInitialMessage(mode),
+          suggestions: ["Ask a question or upload a document"],
+        },
+      },
+    ]);
+  };
+
+  useEffect(() => {
+    handleNewChat(activeGPT); // Load default chat on first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (messagesEndRef.current) {
@@ -39,7 +61,6 @@ const AIChatting = () => {
       const interval = setInterval(() => {
         current += typingMessage.text[i];
         setMessages((prev) => {
-          // Replace the last assistant message with the updated text
           const lastIdx = prev.length - 1;
           if (prev[lastIdx]?.role === "assistant") {
             const updated = [...prev];
@@ -56,105 +77,102 @@ const AIChatting = () => {
           setTypingMessage(null);
           clearInterval(interval);
         }
-      }, 25); // Adjust speed here (ms per character)
+      }, 25);
       return () => clearInterval(interval);
     }
   }, [typingMessage]);
 
-  const handleNewChat = () => {
-    setMessages([
-      {
-        id: Date.now(),
-        role: "assistant",
-        content: {
-          text: "Hello! I'm an **expert AI Legal Advisor specializing in business law and corporate** in Bangladesh. How can I help you with your projects today?",
-          suggestions: ["Create a new project"],
+  const getApiEndpoint = (mode) => {
+    switch (mode) {
+      case "document":
+        return "http://127.0.0.1:8000/ai_tools/document/gemini/ask_document/";
+      case "market":
+        return "http://127.0.0.1:8000/ai_tools/document/gemini/ask_market/";
+      case "legal":
+      default:
+        return "http://127.0.0.1:8000/ai_tools/document/gemini/ask_startup/";
+    }
+  };
+
+  const handleSendMessage = async (text) => {
+    if (!text.trim()) return;
+
+    const userMessage = {
+      id: Date.now(),
+      role: "user",
+      content: { text },
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+
+    const allUserQueries = [
+      ...messages
+        .filter((msg) => msg.role === "user")
+        .map((msg) => msg.content.text),
+      text,
+    ];
+
+    const endpoint = getApiEndpoint(activeGPT);
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
         },
-      },
-    ]);
+        body: JSON.stringify({ message: allUserQueries }),
+      });
+
+      const data = await response.json();
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 1,
+          role: "assistant",
+          content: { text: "" },
+        },
+      ]);
+
+      setTypingMessage({
+        text: data.answer || "Sorry, I couldn't get a response.",
+      });
+    } catch (error) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now() + 2,
+          role: "assistant",
+          content: {
+            text: `There was an error connecting to the AI backend: ${error.message}`,
+          },
+        },
+      ]);
+    }
   };
 
   return (
     <div className="flex h-screen bg-gray-50">
-      {/* Sidebar for larger screens */}
       <ChatSidebar
         isOpen={sidebarOpen}
         onClose={toggleSidebar}
         onNewChat={handleNewChat}
       />
 
-      {/* Main content */}
       <div className="relative flex-1 flex flex-col h-full lg:pl-64">
-        <ChatHeader onMenuClick={toggleSidebar} onNewChat={handleNewChat} />
+        <ChatHeader
+          onMenuClick={toggleSidebar}
+          onNewChat={() => handleNewChat(activeGPT)}
+        />
 
-        {/* Chat area */}
         <div className="flex-1 overflow-y-auto py-6">
           <ChatMessageList messages={messages} />
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Chat input area */}
         <div className="sticky bottom-0 w-full p-3 sm:py-4 bg-gray-50">
-          <ChatInput
-            onSendMessage={async (text) => {
-              if (text.trim()) {
-                setMessages([
-                  ...messages,
-                  {
-                    id: Date.now(),
-                    role: "user",
-                    content: { text },
-                  },
-                ]);
-
-                const allUserQueries = [
-                  ...messages
-                    .filter((msg) => msg.role === "user")
-                    .map((msg) => msg.content.text),
-                  text,
-                ];
-
-                try {
-                  const response = await fetch(
-                    "http://127.0.0.1:8000/ai_tools/document/gemini/ask_Startup/",
-                    {
-                      method: "POST",
-                      headers: {
-                        "Content-Type": "application/json",
-                        Accept: "application/json",
-                      },
-                      body: JSON.stringify({ message: allUserQueries }),
-                    }
-                  );
-                  const data = await response.json();
-
-                  // Add empty assistant message first, then animate
-                  setMessages((prev) => [
-                    ...prev,
-                    {
-                      id: Date.now() + 1,
-                      role: "assistant",
-                      content: { text: "" },
-                    },
-                  ]);
-                  setTypingMessage({
-                    text: data.answer || "Sorry, I couldn't get a response.",
-                  });
-                } catch (error) {
-                  setMessages((prev) => [
-                    ...prev,
-                    {
-                      id: Date.now() + 2,
-                      role: "assistant",
-                      content: {
-                        text: "There was an error connecting to the AI backend.",
-                      },
-                    },
-                  ]);
-                }
-              }
-            }}
-          />
+          <ChatInput onSendMessage={handleSendMessage} />
         </div>
       </div>
     </div>
