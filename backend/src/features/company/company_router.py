@@ -1,5 +1,6 @@
 # Company Router
-from typing import Annotated
+from typing import Annotated, Optional
+from fastapi import Security
 from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlmodel import Session, select
 from datetime import timedelta
@@ -9,12 +10,13 @@ from src import models
 from src.core import settings
 from src.core import get_session
 from src.security import oauth2
+from src.services.email import send_mail
 from src.schemas import Message, TokenData
 from src.utils.jwt_utils import create_jwt_token, decode_jwt_token
 from . import company_schemas as schema
 from . import company_services
 
-from src.enums import MemberRole
+from src import enums
 
 router = APIRouter(prefix="/company")
 DBSession = Annotated[Session, Depends(get_session)]
@@ -51,7 +53,7 @@ def create_company(
     company_member = models.CompanyMember(
         user_id=user.email,
         company_id=new_company.id,
-        role=MemberRole.ADMIN,
+        role=enums.MemberRole.ADMIN,
         position="Founder",  # default or from request
     )
     session.add(company_member)
@@ -77,7 +79,7 @@ def create_invitation_link(
         )
     ).first()
 
-    if not member or member.role != models.MemberRole.ADMIN:
+    if not member or member.role != enums.MemberRole.ADMIN:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Only Admins can generate invite links.",
@@ -85,7 +87,7 @@ def create_invitation_link(
 
     payload = {
         "company_id": member.company_id,
-        "role": models.MemberRole.MEMBER,
+        "role": enums.MemberRole.MEMBER,
         "position": "Employee",  # Default; can be made dynamic
     }
 
@@ -201,16 +203,107 @@ def list_company_members(
             detail="You are not associated with any company.",
         )
     members = session.exec(
-        select(models.CompanyMember).where(models.CompanyMember.company_id == user.company_id)
+        select(models.CompanyMember).where(
+            models.CompanyMember.company_id == user.company_id
+        )
     ).all()
     result = []
     for m in members:
         user_obj = session.exec(
             select(models.User).where(models.User.email == m.user_id)
         ).first()
-        result.append({
-            "id": user_obj.id if user_obj else None,  # Use integer ID
-            "name": user_obj.name if user_obj else "",
-            "position": m.position
-        })
+        result.append(
+            {
+                "id": user_obj.id if user_obj else None,  # Use integer ID
+                "name": user_obj.name if user_obj else "",
+                "position": m.position,
+            }
+        )
     return result
+
+
+@router.post("/invite/{email}", response_model=Message)
+async def send_invitation_link(
+    email: str,
+    session: DBSession,
+    user: oauth2.TokenData = Depends(oauth2.get_current_user),
+):
+    """
+    An admin can create an invitation link via JWT.
+    The invitation JWT token contains new_member_email, company_id, role='Member', and position.
+    """
+    member = session.exec(
+        select(models.CompanyMember).where(
+            models.CompanyMember.user_id == user.email,
+            models.CompanyMember.company_id == user.company_id,
+        )
+    ).first()
+
+    if not member or member.role != enums.MemberRole.ADMIN:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only Admins can generate invite links.",
+        )
+    # Check if user is already a member
+    existing_member = session.exec(
+        select(models.CompanyMember).where(models.CompanyMember.user_id == email)
+    ).first()
+
+    if existing_member:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="User is already a member of the company.",
+        )
+
+    payload = {
+        "new_member_email": email,
+        "company_id": member.company_id,
+        "role": enums.MemberRole.MEMBER,
+        "position": "Employee",  # Default; can be made dynamic
+    }
+
+    token = create_jwt_token(payload, expires_delta=timedelta(hours=24))
+    # return f"{settings.server_url}/api/company/join?token={token}"
+    link = f"{settings.server_url}/api/company/join?token={token}"
+    await send_mail(
+        subject="Invitation link",
+        body=link,
+        emails=[email],
+    )
+
+    return Message(message="Invitation link send successfully!")
+
+
+@router.get("/join", response_model=Message)
+def accept_invitation_link(
+    token: str = Query(...),
+    session: Session = Depends(get_session),
+):
+    """
+    Parse the JWT token and add the user to the company member table.
+    """
+    try:
+        payload = decode_jwt_token(token)
+    except Exception as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid or expired invitation token.",
+        )
+
+    # Extract fields from payload new_member_email
+    new_member_email = payload.get("new_member_email")
+    company_id = payload.get("company_id")
+    role = payload.get("role", enums.MemberRole.MEMBER)
+    position = payload.get("position", "Employee")
+
+    # Add new company member
+    new_member = models.CompanyMember(
+        user_id=new_member_email,
+        company_id=company_id,
+        role=role,
+        position=position,
+    )
+    session.add(new_member)
+    session.commit()
+
+    return Message(message="You have successfully joined the company.")
