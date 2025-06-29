@@ -26,3 +26,4 @@ python-multipart
 # ======== Others ===========
 pika
 PyPDF2
+fastapi-mail

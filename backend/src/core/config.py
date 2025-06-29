@@ -27,6 +27,11 @@ class Settings(BaseSettings):
     aws_region: str
     s3_bucket_name: str
 
+    # =========== Email ==============
+    mail_address: str
+    mail_password: str
+    mail_server: str
+
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
