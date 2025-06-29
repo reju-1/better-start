@@ -1,4 +1,5 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
+from typing import List
 from pydantic import EmailStr
 from typing import Optional
 from datetime import datetime
@@ -27,6 +28,9 @@ class Company(SQLModel, table=True):
     monthly_target: Optional[int] = None
     logo_url: Optional[str] = Field(default=None, max_length=255)
     created_at: datetime = Field(default_factory=datetime.now)
+    
+    sales: List["Sales"] = Relationship(back_populates="company")
+
 
 
 class CompanyMember(SQLModel, table=True):
