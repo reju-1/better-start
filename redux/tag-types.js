@@ -3,6 +3,7 @@ export const tagTypes = {
   company: "company",
   project: "project",
   task: "project",
+  job: "job",
 };
 
 export const tagTypesList = [
@@ -10,4 +11,5 @@ export const tagTypesList = [
   tagTypes.company,
   tagTypes.project,
   tagTypes.task,
+  tagTypes.job,
 ];

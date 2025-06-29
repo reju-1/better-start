@@ -7,8 +7,21 @@ import MonthlyTargetCard from "./MonthlyTargetCard";
 import ProjectsTable from "./ProjectsTable";
 import SalesTable from "./SalesTable";
 import Image from "next/image";
+import {
+  useGetTotalsQuery,
+  useGetMonthlySalesQuery,
+  useGetMonthlyTargetsQuery,
+} from "../../redux/api/dashboardApi";
 
 const DashboardLayout = () => {
+  const { data: totals } = useGetTotalsQuery({});
+  const { data: monthlySalaries } = useGetMonthlySalesQuery({});
+  const { data: monthlyTargets } = useGetMonthlyTargetsQuery({});
+
+  console.log("Totals:", totals);
+  console.log("Monthly Salaries:", monthlySalaries);
+  console.log("Monthly Targets:", monthlyTargets);
+
   return (
     <div className="max-w-7xl mx-auto mt-28 mb-12">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
