@@ -21,7 +21,10 @@ passlib[bcrypt]
 # ======== AI ===========
 google-generativeai
 python-multipart
-
+pandas
+numpy
+scikit-learn
+python-multipart
 
 # ======== Others ===========
 pika
