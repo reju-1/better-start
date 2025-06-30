@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import Image from "next/image";
 
 const AIProjectAssistant = ({ onGenerateContent, isGenerating }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +11,7 @@ const AIProjectAssistant = ({ onGenerateContent, isGenerating }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!prompt.trim() || isGenerating) return;
-    
+
     try {
       await onGenerateContent(prompt);
       setIsOpen(false);
@@ -30,6 +31,14 @@ const AIProjectAssistant = ({ onGenerateContent, isGenerating }) => {
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             className="absolute bottom-16 right-0 mb-2 w-[320px] bg-white rounded-lg shadow-lg border border-gray-200"
           >
+            <div className="flex item-center justify-center bg-[#6A49BA]">
+              <Image
+                src={"https://i.ibb.co/YB7qRvFb/image.png"}
+                width={200}
+                height={150}
+                alt="BetterStart AI"
+              />
+            </div>
             <form onSubmit={handleSubmit} className="p-4">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Describe your project
@@ -73,13 +82,15 @@ const AIProjectAssistant = ({ onGenerateContent, isGenerating }) => {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-full shadow-lg hover:bg-purple-700 transition-colors"
       >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" 
-            d="M13 10V3L4 14h7v7l9-11h-7z" />
-        </svg>
-        AI Assistant
+        <div className="rounded-full">
+          <Image
+            src={"https://i.ibb.co/4ZG3Zq4n/bs-icon.png"}
+            alt="AI"
+            width={50}
+            height={50}
+          />
+        </div>
       </motion.button>
     </div>
   );
