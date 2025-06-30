@@ -3,7 +3,7 @@ import httpx
 from io import BytesIO
 from .config import settings
 from .utilities.pdf_reader import extract_text_from_pdf
-from .services.llm_service import analyze_cv_with_prompt_v2_gemini
+from .services import llm_service as llm
 from .services.s3 import create_presigned_url
 from .utilities.schemas import CvReport, CvReportRequest
 
@@ -24,7 +24,7 @@ def callback(ch, method, properties, body):
         cv_text = extract_text_from_pdf(BytesIO(pdf_response.content))
 
         # Analyze with via LLM
-        result_dict = analyze_cv_with_prompt_v2_gemini(cv_text, job_prompt)
+        result_dict = llm.analyze_cv_robustly(cv_text, job_prompt)
         report = CvReport(**result_dict, applicant_id=task_id)  # validate response
 
         # Post result to FastAPI
@@ -32,7 +32,7 @@ def callback(ch, method, properties, body):
         response.raise_for_status()
 
         ch.basic_ack(delivery_tag=method.delivery_tag)
-        print(f"Processed task: {task_id}")
+        print(f"Processed task: {task_id}\n")
 
     except Exception as e:
         print(f"[!] Error: {e}")
