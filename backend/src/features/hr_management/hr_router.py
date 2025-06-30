@@ -3,8 +3,10 @@ from fastapi import APIRouter, Depends, status
 from sqlmodel import Session, select
 
 # Internal imports
-from src.core import get_session
+from src.core import get_session, settings
 from src.security import oauth2
+from src.services.s3 import presigned_url_get_object
+
 from src import models
 from src import schemas as gs  # Global Schemas
 from . import hr_schemas as schema
@@ -77,8 +79,12 @@ def update_cv_rating(
     """
     Return all the application received for a particular job circular
     """
-    job_application = session.exec(
+    job_applications = session.exec(
         select(models.CVSubmit).where(models.CVSubmit.job_id == job_id)
     ).all()
 
-    return job_application
+    for app in job_applications:
+        object_key = app.cv_pdf  # Access attribute, not dictionary
+        app.cv_pdf = presigned_url_get_object(settings.s3_bucket_name, object_key)
+
+    return job_applications

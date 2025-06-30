@@ -47,6 +47,25 @@ def create_presigned_url(
         return None
 
 
+def presigned_url_get_object(bucket_name, object_key, expiration=60 * 60):
+    s3 = boto3.client(
+        "s3",
+        aws_access_key_id=settings.aws_access_key_id,
+        aws_secret_access_key=settings.aws_secret_access_key,
+        region_name=settings.aws_region,
+    )
+    try:
+        url = s3.generate_presigned_url(
+            ClientMethod="get_object",
+            Params={"Bucket": bucket_name, "Key": object_key},
+            ExpiresIn=expiration,
+        )
+    except ClientError as e:
+        print("Error:", e)
+        return None
+    return url
+
+
 def is_valid_object_name(obj_name: str) -> bool:
     """
     Validate object name:
