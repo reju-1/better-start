@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime, date
 from pydantic import BaseModel, EmailStr, ConfigDict, Field, conint, constr
 from src import enums
@@ -96,3 +96,9 @@ class CvReport(BaseModel):
     applicant_id: int
     rating: conint(ge=1, le=5)  # type: ignore
     remarks: constr(strip_whitespace=True, max_length=500)  # type: ignore
+
+
+class EmailSchema(BaseModel):
+    subject: str
+    body: str
+    receivers: List[EmailStr]

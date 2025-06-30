@@ -1,10 +1,12 @@
 from typing import Annotated, List
 from fastapi import APIRouter, Depends, status
 from sqlmodel import Session, select
+from pydantic import EmailStr
 
 # Internal imports
 from src.core import get_session, settings
 from src.security import oauth2
+from src.services.email import send_mail
 from src.services.s3 import presigned_url_get_object
 
 from src import models
@@ -88,3 +90,15 @@ def update_cv_rating(
         app.cv_pdf = presigned_url_get_object(settings.s3_bucket_name, object_key)
 
     return job_applications
+
+
+@router.post(
+    "/send-email",
+    response_model=gs.Message,
+)
+async def send_email_to_candidate(
+    email_data: schema.EmailSchema,
+    user: gs.TokenData = Depends(oauth2.get_current_user),
+):
+    await send_mail(email_data.subject, email_data.body, email_data.receivers)
+    return {"message": "Email send successfully!"}
