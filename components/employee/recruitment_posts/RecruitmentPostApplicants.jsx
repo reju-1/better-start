@@ -1,154 +1,84 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import Breadcrumb from "../../common/Breadcrumb";
-import { ArrowRight } from "lucide-react";
 import ApplicantTable from "./ApplicantTable";
 import Image from "next/image";
+import {
+  useGetJobApplicantsQuery,
+  useGetJobPostsQuery,
+  useSendMailMutation,
+} from "../../../redux/api/hrApi";
+import toast from "react-hot-toast";
 
-// Dummy data for applicants
-const dummyApplicants = [
-  {
-    id: 1,
-    name: "Sarah Johnson",
-    phone: "+1 555-123-4567",
-    email: "sarah.johnson@email.com",
-    rating: 5,
-    feedback: "Excellent communication skills, highly suitable for the role.",
-    status: "accepted",
-  },
-  {
-    id: 2,
-    name: "Michael Lee",
-    phone: "+1 555-987-6543",
-    email: "michael.lee@email.com",
-    rating: 4,
-    feedback: "Good technical skills, needs improvement in teamwork.",
-    status: "pending",
-  },
-  {
-    id: 3,
-    name: "Jessica Chen",
-    phone: "+1 555-678-9012",
-    email: "jessica.chen@email.com",
-    rating: 3,
-    feedback:
-      "Average performance in technical assessment. Decent communication.",
-    status: "pending",
-  },
-  {
-    id: 4,
-    name: "David Wilson",
-    phone: "+1 555-345-6789",
-    email: "david.wilson@email.com",
-    rating: 2,
-    feedback: "Limited experience for the role. Consider for junior position.",
-    status: "rejected",
-  },
-  {
-    id: 5,
-    name: "Emily Rodriguez",
-    phone: "+1 555-890-1234",
-    email: "emily.rodriguez@email.com",
-    rating: 5,
-    feedback: "Outstanding technical skills and great cultural fit.",
-    status: "accepted",
-  },
-];
+const RecruitmentPostApplicants = ({ postId }) => {
+  const [checkedApplicants, setCheckedApplicants] = useState([]);
+  const [emailMessage, setEmailMessage] = useState("");
 
-const RecruitmentPostApplicants = ({ postId = 1 }) => {
-  const [applicants, setApplicants] = useState(dummyApplicants);
-  const [filteredApplicants, setFilteredApplicants] = useState(dummyApplicants);
-  const [search, setSearch] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(9);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [recruitmentInfo, setRecruitmentInfo] = useState({
-    title: "Software Engineer Recruitment",
-    startDate: "2025-05-01",
-    daysAgo: 22,
-  });
+  const { data: applicantList = [] } = useGetJobApplicantsQuery({ id: postId });
+  const { data: jobPostLists } = useGetJobPostsQuery({});
+  const [sendMail] = useSendMailMutation();
 
-  // Calculate how many days ago from the start date
-  useEffect(() => {
-    // In a real app, this would be calculated based on current date
-    // For now, we're using the dummy value
-  }, []);
+  const jobPostDetails = jobPostLists?.find(
+    (job) => String(job.id) === String(postId)
+  );
 
-  // Filter applicants based on search
-  useEffect(() => {
-    if (search.trim() === "") {
-      setFilteredApplicants(applicants);
-    } else {
-      const filtered = applicants.filter(
-        (applicant) =>
-          applicant.name.toLowerCase().includes(search.toLowerCase()) ||
-          applicant.email.toLowerCase().includes(search.toLowerCase())
-      );
-      setFilteredApplicants(filtered);
-    }
-  }, [search, applicants]);
+  const createdAt = jobPostDetails?.created_at
+    ? new Date(jobPostDetails.created_at)
+    : null;
 
-  // Pagination logic
-  const totalItems = filteredApplicants.length;
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
-  const currentItems = filteredApplicants.slice(startIndex, endIndex);
+  let daysAgoText = "";
+  if (createdAt) {
+    const now = new Date();
+    const diffTime = now.setHours(0, 0, 0, 0) - createdAt.setHours(0, 0, 0, 0);
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) daysAgoText = "Today";
+    else if (diffDays === 1) daysAgoText = "1 day ago";
+    else daysAgoText = `${diffDays} days ago`;
+  }
 
-  // Handle page navigation
-  const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
+  const currentItems = applicantList;
 
-  const goToPrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-
-  // Handle items per page change
-  const handleItemsPerPageChange = (e) => {
-    setItemsPerPage(Number(e.target.value));
-    setCurrentPage(1); // Reset to first page when changing items per page
-  };
-
-  // Handle applicant status change
-  const handleStatusChange = (id, newStatus) => {
-    const updatedApplicants = applicants.map((applicant) =>
-      applicant.id === id ? { ...applicant, status: newStatus } : applicant
+  const handleCheckboxChange = (id) => {
+    setCheckedApplicants((prev) =>
+      prev.includes(id) ? prev.filter((appId) => appId !== id) : [...prev, id]
     );
-    setApplicants(updatedApplicants);
   };
 
-  // Render stars based on rating
-  const renderStars = (rating) => {
-    const stars = [];
-    for (let i = 1; i <= 5; i++) {
-      stars.push(
-        <svg
-          key={i}
-          className={`shrink-0 size-3 ${
-            i <= rating ? "text-blue-600" : "text-gray-300"
-          }`}
-          xmlns="http://www.w3.org/2000/svg"
-          width="16"
-          height="16"
-          fill="currentColor"
-          viewBox="0 0 16 16"
-        >
-          <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z" />
-        </svg>
-      );
+  const handleSendEmail = async () => {
+    const selectedApplicants = applicantList.filter((a) =>
+      checkedApplicants.includes(a.id)
+    );
+    const receivers = selectedApplicants.map((applicant) => applicant?.email);
+
+    if (receivers.length === 0) {
+      return;
     }
-    return stars;
+
+    try {
+      await sendMail({
+        subject: "Regarding Your Job Application",
+        body: emailMessage,
+        receivers,
+      }).unwrap();
+
+      setCheckedApplicants([]);
+      setEmailMessage("");
+
+      toast.success("Email sent successfully!");
+    } catch (err) {
+      console.log(err);
+    }
   };
+
+  const title = jobPostDetails?.title || "Recruitment Post";
+  const startDate = jobPostDetails?.created_at
+    ? new Date(jobPostDetails.created_at).toLocaleDateString()
+    : "";
 
   return (
     <div className="bg-bg-color min-h-screen pb-12">
-      {/* Breadcrumb */}
       <Breadcrumb
         items={[
           { label: "Employee", href: "/dashboard/employee" },
@@ -160,25 +90,19 @@ const RecruitmentPostApplicants = ({ postId = 1 }) => {
         currentPage="Applicants"
       />
 
-      {/* Job Recruitment Title Section */}
       <div className="max-w-[85rem] px-4 mx-auto mt-6 mb-2">
         <div className="bg-white rounded-xl shadow p-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">
-              {recruitmentInfo.title}
-            </h1>
+            <h1 className="text-2xl font-bold text-gray-800">{title}</h1>
             <p className="text-sm text-gray-600 mt-1">
-              Started on:{" "}
-              <span className="font-medium">{recruitmentInfo.startDate}</span>
+              Started on: <span className="font-medium">{startDate}</span>
               &middot;
-              <span className="text-blue-600 font-semibold">
-                {recruitmentInfo.daysAgo} days ago
-              </span>
+              <span className="text-primary font-semibold">{daysAgoText}</span>
             </p>
           </div>
           <div>
             <Link
-              href={`/employee_recruitment`}
+              href={`/apply/${jobPostDetails?.id}`}
               target="_blank"
               className="text-[1rem] font-medium text-black no-underline flex items-center gap-3"
             >
@@ -194,20 +118,31 @@ const RecruitmentPostApplicants = ({ postId = 1 }) => {
         </div>
       </div>
 
-      {/* Table Section */}
+      {checkedApplicants.length > 0 && (
+        <div className="max-w-[85rem] px-4 mx-auto mt-4 mb-2">
+          <div className="bg-white rounded-xl shadow p-6 flex flex-wrap items-center gap-4">
+            <input
+              type="text"
+              className="border border-gray-300 rounded px-4 py-2 flex-1 min-w-[200px]"
+              placeholder="Type your email message"
+              value={emailMessage}
+              onChange={(e) => setEmailMessage(e.target.value)}
+            />
+            <button
+              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+              onClick={handleSendEmail}
+              disabled={!emailMessage.trim()}
+            >
+              Send Email
+            </button>
+          </div>
+        </div>
+      )}
+
       <ApplicantTable
-        search={search}
-        setSearch={setSearch}
         currentItems={currentItems}
-        renderStars={renderStars}
-        handleStatusChange={handleStatusChange}
-        itemsPerPage={itemsPerPage}
-        handleItemsPerPageChange={handleItemsPerPageChange}
-        totalItems={totalItems}
-        goToPrevPage={goToPrevPage}
-        goToNextPage={goToNextPage}
-        currentPage={currentPage}
-        totalPages={totalPages}
+        checkedApplicants={checkedApplicants}
+        handleCheckboxChange={handleCheckboxChange}
       />
     </div>
   );

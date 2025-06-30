@@ -11,33 +11,39 @@ import { useRouter } from "next/navigation";
 import { useCreateJobPostMutation } from "../../../redux/api/hrApi";
 import toast from "react-hot-toast";
 
-// jOB the validation schema
 const jobPostSchema = z.object({
-  title: z.string().min(1, "Job title is required"),
-  job_description: z
-    .string()
-    .min(50, "Please provide a detailed job description (min 50 characters)"),
-  role_apply: z.string().min(1, "Role apply is required"),
-  prefered_engagement: z.string().min(1, "Preferred engagement is required"),
-  skill_require: z.string().min(1, "Required skills are needed"),
-  skill_prefer: z.string().min(1, "Preferred skills are needed"),
-  experience_level: z.string().min(1, "Experience level is required"),
-  location: z.string().min(1, "Location is required"),
-  employement_type: z.string().min(1, "Please select an employment type"),
+  title: z.string().min(1),
+  job_description: z.string().min(50),
+  role_apply: z.string().min(1),
+  prefered_engagement: z.string().min(1),
+  skill_require: z.string().min(1),
+  skill_prefer: z.string().min(1),
+  experience_level: z.string().min(1),
+  location: z.string().min(1),
+  employement_type: z.string().min(1),
   salary: z.string().optional(),
-  end_date: z.string().min(1, "End date is required"),
+  end_date: z.string().min(1),
 });
 
-const CreateJobPost = ({ onSubmit }) => {
+const employmentTypes = [
+  { value: "", label: "Select type" },
+  { value: "Full-time", label: "Full-time" },
+  { value: "Part-time", label: "Part-time" },
+  { value: "Contract", label: "Contract" },
+  { value: "Internship", label: "Internship" },
+  { value: "Temporary", label: "Temporary" },
+];
+
+const CreateJobPost = () => {
   const router = useRouter();
   const [createJobPost] = useCreateJobPostMutation();
 
   const handleSubmit = async (data) => {
     const toastId = toast.loading("Creating job post...");
-
     try {
-      const response = await createJobPost({
-        company_id: 0,
+      const now = new Date();
+      const endDate = new Date(data.end_date);
+      const payload = {
         title: data.title,
         job_description: data.job_description,
         role_apply: data.role_apply,
@@ -47,38 +53,17 @@ const CreateJobPost = ({ onSubmit }) => {
         experience_level: data.experience_level,
         location: data.location,
         employement_type: data.employement_type,
-        salary: data.salary,
-        end_date: data.end_date,
-      }).unwrap();
-
-      console.log("Job post created:", response);
+        salary: data.salary || "",
+        created_at: now.toISOString(),
+        end_date: endDate.toISOString(),
+      };
+      await createJobPost(payload).unwrap();
       toast.success("Job post created successfully!", { id: toastId });
-
-      if (onSubmit) {
-        onSubmit(response);
-      }
-
-      router.push("/dashboard/employee");
+      router.push("/dashboard/employee/recruitment_posts");
     } catch (error) {
-      console.error("Failed to create job post:", error);
-      toast.error(error?.data?.message || "Failed to create job post", {
-        id: toastId,
-      });
+      toast.error("Failed to create job post", { id: toastId });
     }
   };
-
-  const handleCancel = () => {
-    router.push("/dashboard/employee");
-  };
-
-  const employmentTypes = [
-    { value: "", label: "Select type" },
-    "Full-time",
-    "Part-time",
-    "Contract",
-    "Internship",
-    "Temporary",
-  ];
 
   return (
     <>
@@ -86,13 +71,11 @@ const CreateJobPost = ({ onSubmit }) => {
         items={[{ label: "Employee", href: "/dashboard/employee" }]}
         currentPage="Create Job Requirement"
       />
-
       <div className="max-w-4xl px-4 py-10 mb-10 sm:px-6 lg:px-8 lg:pt-2 lg:pb-0 mx-auto">
         <div className="bg-white rounded-xl shadow-xs p-4 sm:p-7">
           <h1 className="text-2xl font-bold text-gray-800 mb-6">
             New Job Requirement
           </h1>
-
           <CustomForm
             onSubmit={handleSubmit}
             resolver={zodResolver(jobPostSchema)}
@@ -110,7 +93,6 @@ const CreateJobPost = ({ onSubmit }) => {
               end_date: "",
             }}
           >
-            {/* Job Title */}
             <div className="mb-5">
               <label
                 htmlFor="job-title"
@@ -126,8 +108,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Role Apply */}
             <div className="mb-5">
               <label
                 htmlFor="role-apply"
@@ -143,8 +123,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Preferred Engagement */}
             <div className="mb-5">
               <label
                 htmlFor="preferred-engagement"
@@ -161,8 +139,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Job Description */}
             <div className="mb-5">
               <label
                 htmlFor="job-description"
@@ -179,8 +155,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Required Skills */}
             <div className="mb-5">
               <label
                 htmlFor="required-skills"
@@ -197,8 +171,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Preferred Skills */}
             <div className="mb-5">
               <label
                 htmlFor="preferred-skills"
@@ -212,10 +184,9 @@ const CreateJobPost = ({ onSubmit }) => {
                 rows={2}
                 placeholder="List nice-to-have skills, separated by commas"
                 className="py-2 px-3 block w-full border-gray-200 rounded-lg shadow-2xs sm:text-sm focus:border-purple-500 focus:ring-purple-500"
+                required
               />
             </div>
-
-            {/* Experience Level */}
             <div className="mb-5">
               <label
                 htmlFor="experience-level"
@@ -231,10 +202,7 @@ const CreateJobPost = ({ onSubmit }) => {
                 required
               />
             </div>
-
-            {/* Location and Employment Type */}
             <div className="flex flex-row gap-4 mb-5">
-              {/* Location */}
               <div className="w-1/2">
                 <label
                   htmlFor="location"
@@ -250,8 +218,6 @@ const CreateJobPost = ({ onSubmit }) => {
                   required
                 />
               </div>
-
-              {/* Employment Type */}
               <div className="w-1/2">
                 <label
                   htmlFor="employment-type"
@@ -268,10 +234,7 @@ const CreateJobPost = ({ onSubmit }) => {
                 />
               </div>
             </div>
-
-            {/* Salary Range and Posted Date */}
             <div className="flex flex-row gap-4 mb-8">
-              {/* Salary Range */}
               <div className="w-1/2">
                 <label
                   htmlFor="salary-range"
@@ -286,14 +249,12 @@ const CreateJobPost = ({ onSubmit }) => {
                   className="py-2 px-3 block w-full border-gray-200 rounded-lg shadow-2xs sm:text-sm focus:border-purple-500 focus:ring-purple-500"
                 />
               </div>
-
-              {/* Posted Date  */}
               <div className="w-1/2">
                 <label
                   htmlFor="posted-date"
                   className="block text-sm font-medium text-gray-500 mb-1"
                 >
-                  Posted Date
+                  End Date
                 </label>
                 <CustomInput
                   name="end_date"
@@ -304,8 +265,6 @@ const CreateJobPost = ({ onSubmit }) => {
                 />
               </div>
             </div>
-
-            {/* Submit Buttons */}
             <div className="flex gap-4">
               <button
                 type="submit"
@@ -315,7 +274,7 @@ const CreateJobPost = ({ onSubmit }) => {
               </button>
               <button
                 type="button"
-                onClick={handleCancel}
+                onClick={() => router.push("/dashboard/employee")}
                 className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-gray-400 text-white hover:bg-gray-500 focus:outline-hidden focus:bg-gray-500 disabled:opacity-50 disabled:pointer-events-none"
               >
                 Cancel

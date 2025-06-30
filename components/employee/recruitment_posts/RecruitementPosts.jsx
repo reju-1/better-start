@@ -7,125 +7,26 @@ import Link from "next/link";
 import Breadcrumb from "../../common/Breadcrumb";
 import { useGetJobPostsQuery } from "../../../redux/api/hrApi";
 
-const dummyPosts = [
-  {
-    id: 1,
-    company_id: 1,
-    title: "Software Engineer",
-    job_description:
-      "Responsible for developing scalable web applications and collaborating with cross-functional teams.",
-    role_apply: "Software Development",
-    prefered_engagement: "Remote",
-    skill_require: "React, Node.js, TypeScript",
-    skill_prefer: "AWS, Docker",
-    experience_level: "Mid Level",
-    location: "New York",
-    salary: "$80,000 - $120,000",
-    employement_type: "Full Time",
-    created_at: "2025-05-01T00:00:00Z",
-    end_date: "2025-06-15T00:00:00Z",
-  },
-  {
-    id: 2,
-    company_id: 2,
-    title: "HR Manager",
-    job_description:
-      "Oversee recruitment processes and employee relations for the organization.",
-    role_apply: "Human Resources",
-    prefered_engagement: "On-site",
-    skill_require: "Recruitment, Employee Relations",
-    skill_prefer: "HRIS, ATS",
-    experience_level: "Senior Level",
-    location: "San Francisco",
-    salary: "$90,000 - $130,000",
-    employement_type: "Part Time",
-    created_at: "2025-04-20T00:00:00Z",
-    end_date: "2025-05-30T00:00:00Z",
-  },
-  {
-    id: 3,
-    company_id: 3,
-    title: "Data Analyst",
-    job_description:
-      "Analyze business data and generate actionable insights for management.",
-    role_apply: "Data Analysis",
-    prefered_engagement: "Remote",
-    skill_require: "SQL, Python, Excel",
-    skill_prefer: "Tableau, Power BI",
-    experience_level: "Entry Level",
-    location: "Austin",
-    salary: "$70,000 - $100,000",
-    employement_type: "Contract",
-    created_at: "2025-03-10T00:00:00Z",
-    end_date: "2025-04-10T00:00:00Z",
-  },
-  {
-    id: 4,
-    company_id: 1,
-    title: "Frontend Developer",
-    job_description:
-      "Build and maintain responsive web interfaces using modern frameworks and libraries.",
-    role_apply: "Software Development",
-    prefered_engagement: "Remote",
-    skill_require: "HTML, CSS, JavaScript",
-    skill_prefer: "React, Vue.js",
-    experience_level: "Mid Level",
-    location: "New York",
-    salary: "$80,000 - $120,000",
-    employement_type: "Full Time",
-    created_at: "2025-05-05T00:00:00Z",
-    end_date: "2025-06-20T00:00:00Z",
-  },
-  {
-    id: 5,
-    company_id: 2,
-    title: "UX Designer",
-    job_description:
-      "Create user-centered designs and improve user experiences for our products.",
-    role_apply: "Design",
-    prefered_engagement: "On-site",
-    skill_require: "Figma, Sketch, Adobe XD",
-    skill_prefer: "InVision, Marvel",
-    experience_level: "Senior Level",
-    location: "San Francisco",
-    salary: "$90,000 - $130,000",
-    employement_type: "Full Time",
-    created_at: "2025-05-10T00:00:00Z",
-    end_date: "2025-06-25T00:00:00Z",
-  },
-];
-
 const RecruitementPosts = () => {
   const [itemsPerPage, setItemsPerPage] = useState(9);
   const [currentPage, setCurrentPage] = useState(1);
 
-  // Remove API call temporarily
-  // const { data } = useGetJobPostsQuery({});
-  
-  // Use dummy data directly
-  const posts = dummyPosts;
-  
-  // Calculate pagination values
+  const { data: posts = [], isLoading } = useGetJobPostsQuery();
+
   const totalItems = posts.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentItems = posts.slice(startIndex, endIndex);
 
-  // Handle page navigation
   const goToNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage(currentPage + 1);
-    }
+    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
 
   const goToPrevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
+    if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
 
-  // Handle items per page change
   const handleItemsPerPageChange = (e) => {
     setItemsPerPage(Number(e.target.value));
     setCurrentPage(1);
@@ -138,14 +39,11 @@ const RecruitementPosts = () => {
         currentPage="Recruitment Posts"
       />
 
-      {/* Table Section */}
       <div className="max-w-[85rem] px-4 py-10 sm:px-6 lg:px-8 lg:py-14 mx-auto">
-        {/* Card */}
         <div className="flex flex-col">
           <div className="-m-1.5 overflow-x-auto">
             <div className="p-1.5 min-w-full inline-block align-middle">
               <div className="bg-white border border-gray-200 rounded-xl shadow-2xs overflow-hidden">
-                {/* Header */}
                 <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-b border-gray-200">
                   <div>
                     <h2 className="text-xl font-semibold text-gray-800">
@@ -155,7 +53,6 @@ const RecruitementPosts = () => {
                       Create recruitment form, edit, publish and more.
                     </p>
                   </div>
-
                   <div>
                     <div className="inline-flex gap-x-2">
                       <Link
@@ -168,13 +65,13 @@ const RecruitementPosts = () => {
                     </div>
                   </div>
                 </div>
-                {/* End Header */}
-
-                {/* Table */}
-                <PostsTable posts={currentItems} />
-                {/* End Table */}
-
-                {/* Footer */}
+                {isLoading ? (
+                  <div className="flex justify-center items-center py-10">
+                    <span className="text-gray-500">Loading...</span>
+                  </div>
+                ) : (
+                  <PostsTable posts={currentItems} />
+                )}
                 <div className="px-6 py-4 grid gap-3 md:flex md:justify-between md:items-center border-t border-gray-200">
                   <div className="inline-flex items-center gap-x-2">
                     <p className="text-sm text-gray-600">Showing:</p>
@@ -194,7 +91,6 @@ const RecruitementPosts = () => {
                     </div>
                     <p className="text-sm text-gray-600">of {totalItems}</p>
                   </div>
-
                   <div>
                     <div className="inline-flex gap-x-2">
                       <button
@@ -219,7 +115,6 @@ const RecruitementPosts = () => {
                         </svg>
                         Prev
                       </button>
-
                       <button
                         type="button"
                         onClick={goToNextPage}
@@ -245,14 +140,11 @@ const RecruitementPosts = () => {
                     </div>
                   </div>
                 </div>
-                {/* End Footer */}
               </div>
             </div>
           </div>
         </div>
-        {/* End Card */}
       </div>
-      {/* End Table Section */}
     </div>
   );
 };

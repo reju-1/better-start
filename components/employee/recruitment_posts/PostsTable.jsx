@@ -51,9 +51,9 @@ const PostsTable = ({ posts }) => {
               <tr key={post.id} className="bg-white hover:bg-gray-50">
                 <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
                   <Link
-                    href={"/dashboard/employee/recruitment_post_applicants"}
+                    href={`/dashboard/employee/recruitment_post_applicants/${post.id}`}
                   >
-                    <span className="block font-semibold text-gray-800 underline">
+                    <span className="block font-semibold text-primary underline">
                       {post.title}
                     </span>
                   </Link>
@@ -79,14 +79,7 @@ const PostsTable = ({ posts }) => {
                     {new Date(post.end_date).toLocaleDateString()}
                   </span>
                 </td>
-                <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm">
-                  <Link
-                    href={`/dashboard/employee/recruitment/edit/${post.id}`}
-                    className="inline-flex justify-center items-center gap-2 rounded-lg border border-gray-200 font-medium bg-white text-gray-700 shadow-2xs align-middle hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white focus:ring-primary transition-all px-2 py-1"
-                  >
-                    Edit
-                  </Link>
-                </td>
+                <td className="whitespace-normal break-words px-2 py-2 sm:px-6 sm:py-2 text-xs sm:text-sm"></td>
               </tr>
             ))
           ) : (
