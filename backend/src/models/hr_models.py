@@ -48,7 +48,7 @@ class CVSubmit(SQLModel, table=True):
     cv_pdf: str = Field(max_length=255)
 
     # Review/Feedback
-    cv_rating: Optional[float] = None
+    cv_rating: Optional[int] = None
     cv_feedback: Optional[str] = None
 
     # Status Tracking
