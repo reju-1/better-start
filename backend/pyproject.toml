@@ -1,0 +1,27 @@
+[project]
+name = "better-start-backend"
+version = "0.1.0"
+description = "FastAPI backend APIs for Better Start"
+readme = "README.md"
+requires-python = ">=3.10"
+
+
+dependencies = [
+    "boto3>=1.40.9",
+    "fastapi>=0.116.1",
+    "fastapi-mail>=1.5.0",
+    "google-generativeai>=0.8.5",
+    "httpx>=0.28.1",
+    "numpy>=2.2.6",
+    "pandas>=2.3.1",
+    "passlib[bcrypt]>=1.7.4",
+    "pika>=1.3.2",
+    "pydantic-settings>=2.10.1",
+    "pydantic[email,timezone]>=2.11.7",
+    "pyjwt>=2.10.1",
+    "pypdf2>=3.0.1",
+    "python-multipart>=0.0.20",
+    "scikit-learn>=1.7.1",
+    "sqlmodel>=0.0.24",
+    "uvicorn>=0.35.0",
+]
