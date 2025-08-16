@@ -25,8 +25,8 @@ router.include_router(task_router, prefix="/api/kanban", tags=["Project➜Kanban
 
 router.include_router(sales_router, prefix="/api/sales", tags=["Sales"])
 
-router.include_router(gemini_router, prefix="/ai_tools/document", tags=["Extras"])
-router.include_router(eda_router, prefix="/upload", tags=["Extras"])
+router.include_router(gemini_router, prefix="/ai_tools/document", tags=["Gemini"])
+router.include_router(eda_router, prefix="/upload", tags=["EDA"])
 
 # Export only the master router
 __all__ = ["router"]

@@ -2,7 +2,6 @@ from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import List
-# from genai_config import model  # Ensure this import points to your model configuration
 import os
 import PyPDF2
 
@@ -10,14 +9,14 @@ from google import generativeai as genai
 from src.core import settings
 
 # Configure Gemini API Key
-genai.configure(api_key=settings.gemini_api_key)  # Replace with env variable in production
+genai.configure(api_key=settings.gemini_api_key)
 
 # Create and export model instance
 model = genai.GenerativeModel(model_name="gemini-2.0-flash")
 
 
 
-router = APIRouter(prefix="/gemini", tags=["Gemini"])
+router = APIRouter(prefix="/gemini")
 
 DATASETS_DIR = os.path.join(os.path.dirname(__file__), "datasets")
 DATASET1 = "Bangladesh Corporate Document Proposals Dataset Creation.pdf"
