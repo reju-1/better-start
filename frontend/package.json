@@ -9,11 +9,13 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@apollo/client": "^3.13.9",
     "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^5.0.1",
     "@reduxjs/toolkit": "^2.7.0",
     "axios": "^1.9.0",
     "framer-motion": "^12.19.2",
+    "graphql": "^16.11.0",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.503.0",
     "moment": "^2.30.1",
