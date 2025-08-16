@@ -2,16 +2,10 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core import init_db, settings
-import src.models  # Temporary: For creating Tables
+from src.core import init_db, settings
+from src.features import router as master_router
+import src.models  # For SQLModel to create tables
 
-# Router imports
-from src import features
-from src.features.dashboard import dashb_routers   # Add this import
-from src.features.kanban import project_router, task_router  # Add this import
-from src.features.sales import sales_router  # Import the sales router
-from src.features.ai_tools.gemini_router import router as gemini_router  # Import the Gemini router
-from src.features.csv_analyzer.routers.csv_router import router as eda_router  # Import the CSV analyzer router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -43,17 +37,4 @@ def get_root():
 
 
 # Include the routers
-app.include_router(features.user_router, prefix="/api", tags=["User"])
-app.include_router(features.company_router, prefix="/api", tags=["Company"])
-
-app.include_router(dashb_routers.router, prefix="/api", tags=["Dashboard"])
-
-app.include_router(features.hr_router, prefix="/api", tags=["HR"])
-
-app.include_router(project_router, prefix="/api/project", tags=["Project"]) 
-app.include_router(task_router, prefix="/api/kanban", tags=["Project➜Kanban"])
-  
-app.include_router(sales_router, prefix="/api/sales", tags=["Sales"])  
-
-app.include_router(gemini_router, prefix="/ai_tools/document", tags=["Extras"])
-app.include_router(eda_router, prefix="/upload", tags=["Extras"])
+app.include_router(master_router)
