@@ -1,0 +1,52 @@
+# --- VCS & build context bloat
+.git/
+.gitignore
+.gitlab/
+.github/
+*.patch
+
+# --- Python caches & compiled files
+__pycache__/
+*.py[cod]
+*.so
+
+# --- Virtual environments & tools
+.venv/
+venv/
+.python-version
+.ruff_cache/
+.mypy_cache/
+.pytest_cache/
+.tox/
+
+# --- Packaging outputs
+build/
+dist/
+*.egg-info/
+
+# --- Coverage & test artifacts
+.coverage
+coverage.xml
+htmlcov/
+
+# --- Editor/IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# --- OS cruft
+.DS_Store
+Thumbs.db
+
+# --- Logs & temp
+*.log
+logs/
+tmp/
+temp/
+
+# --- Environment files (do not COPY secrets into images)
+.env
+.env.*
+!.env.example
+    

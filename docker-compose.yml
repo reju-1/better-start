@@ -1,0 +1,66 @@
+services:
+  ## ===========FastAPI Backend=============
+  backend:
+    container_name: fastapi_app
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8000:8000"
+    env_file: 
+      - ./backend/.env
+    environment:
+      - ENV=development
+    depends_on:
+      - message_broker
+    networks:
+      - app_network
+    volumes:
+    - ./backend/data:/app/data # Persist & Sync the SQLite Database inside /backend/data/
+
+    command: uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
+
+
+  ## =============RabbitMQ CV Analyzer================
+  worker: 
+    container_name: cv_worker
+    build:
+      context: ./worker
+      dockerfile: Dockerfile
+    env_file:
+      - ./worker/.env
+    environment:
+      - PYTHONUNBUFFERED=1 # Ensures logs are flushed immediately
+    depends_on:
+      - message_broker
+    restart: always
+    networks:
+      - app_network
+    command: uv run RunWorker.py
+
+
+  ## =============RabbitMQ Message Broker===============
+  message_broker:
+    image: rabbitmq:3-management
+    container_name: rabbitMQ_container
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq  # Persist RabbitMQ data
+    ports:
+      - "5672:5672"    # AMQP port
+      - "15672:15672"  # management UI
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    networks:
+      - app_network
+
+
+
+## =============Volumes and Networks===============
+volumes:
+  rabbitmq_data:
+    driver: local
+
+networks:
+  app_network:
+    driver: bridge
