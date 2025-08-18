@@ -1,7 +1,7 @@
 services:
-  ## ===========FastAPI Backend=============
+  ## ===========Backend Service=============
   backend:
-    container_name: fastapi_app
+    container_name: fastApi_app
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -20,10 +20,28 @@ services:
 
     command: uv run uvicorn src.main:app --host 0.0.0.0 --port 8000
 
+  ## ===========Frontend service=============
+  frontend:
+    container_name: nextJs_app
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./frontend/.env
+      - ./frontend/.env.local
+    environment:
+      - ENV=development
+    depends_on:
+      - backend
+    networks:
+      - app_network
+    command: npm run dev
 
   ## =============RabbitMQ CV Analyzer================
-  worker: 
-    container_name: cv_worker
+  worker:
+    container_name: cv_worker_app
     build:
       context: ./worker
       dockerfile: Dockerfile
@@ -37,7 +55,6 @@ services:
     networks:
       - app_network
     command: uv run RunWorker.py
-
 
   ## =============RabbitMQ Message Broker===============
   message_broker:
@@ -53,7 +70,6 @@ services:
       - RABBITMQ_DEFAULT_PASS=guest
     networks:
       - app_network
-
 
 
 ## =============Volumes and Networks===============
