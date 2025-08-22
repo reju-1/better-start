@@ -30,6 +30,24 @@ resource "aws_s3_bucket_versioning" "app_bucket_versioning" {
   }
 }
 
+## CORS Configuration
+resource "aws_s3_bucket_cors_configuration" "example" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  cors_rule {
+    allowed_headers = ["*"]
+    allowed_methods = ["PUT", "POST"]
+    allowed_origins = var.allowed_origins
+    expose_headers  = ["ETag"]
+    max_age_seconds = 3000
+  }
+
+  cors_rule {
+    allowed_methods = ["GET"]
+    allowed_origins = var.allowed_origins
+  }
+}
+
 ## Add Lifecycle Rules
 resource "aws_s3_bucket_lifecycle_configuration" "app_bucket_lifecycle" {
   bucket = aws_s3_bucket.app_bucket.id

@@ -9,3 +9,9 @@ variable "bucket_name" {
   type        = string
   default     = "better-start-bucket"
 }
+
+variable "allowed_origins" {
+  description = "List of allowed origins for CORS configuration"
+  type        = list(string)
+  default     = ["*"]
+}
