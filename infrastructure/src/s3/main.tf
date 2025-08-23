@@ -91,3 +91,77 @@ resource "aws_s3_bucket_lifecycle_configuration" "app_bucket_lifecycle" {
     }
   }
 }
+
+## Get current AWS account and region info
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+## KMS Key for Bucket Encryption
+resource "aws_kms_key" "bucket_key" {
+  description             = "KMS key for S3 bucket encryption in BetterStart project"
+  enable_key_rotation     = true
+  rotation_period_in_days = 180 # Default is 365 days
+  deletion_window_in_days = 10
+
+  tags = {
+    Project = "BetterStart"
+    Purpose = "S3BucketEncryption"
+  }
+}
+
+## KMS Key Policy
+resource "aws_kms_key_policy" "bucket_key_policy" {
+  key_id = aws_kms_key.bucket_key.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Id      = "key-policy-s3-bucket"
+    Statement = [
+      {
+        Sid    = "Enable IAM User Permissions"
+        Effect = "Allow"
+        Principal = {
+          AWS = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:root"
+        }
+        Action   = "kms:*"
+        Resource = "*"
+      },
+      {
+        Sid    = "Allow S3 Service"
+        Effect = "Allow"
+        Principal = {
+          Service = "s3.amazonaws.com"
+        }
+        Action = [
+          "kms:Decrypt",
+          "kms:GenerateDataKey",
+          "kms:CreateGrant"
+        ]
+        Resource = "*"
+        Condition = {
+          StringEquals = {
+            "kms:ViaService" = "s3.${data.aws_region.current.id}.amazonaws.com"
+          }
+        }
+      }
+    ]
+  })
+}
+
+## KMS Key Alias
+resource "aws_kms_alias" "app_bucket_key_alias" {
+  name          = "alias/betterStart-s3-bucket-key"
+  target_key_id = aws_kms_key.bucket_key.key_id
+}
+
+## S3 Bucket Server-Side Encryption Configuration
+resource "aws_s3_bucket_server_side_encryption_configuration" "app_bucket_encryption" {
+  bucket = aws_s3_bucket.app_bucket.id
+
+  rule {
+    apply_server_side_encryption_by_default {
+      kms_master_key_id = aws_kms_key.bucket_key.arn
+      sse_algorithm     = "aws:kms"
+    }
+    bucket_key_enabled = true
+  }
+}
