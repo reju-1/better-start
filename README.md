@@ -1,6 +1,6 @@
-# Better-Start
+# BetterStart
 
-**Better-Start** is a lightweight **startup management system** designed specifically for small startups.  
+**BetterStart** is a lightweight **startup management system** designed specifically for small startups.  
 It is offered as a **SaaS product** and provides a set of tools to streamline core startup operations.
 
 ---
@@ -34,7 +34,7 @@ Thanks to these amazing people for contributing to this project:
 
 ## 🏗 Architecture
 
-Better-Start is built on a **microservices architecture** for scalability and maintainability.
+BetterStart is built on a **microservices architecture** for scalability and maintainability.
 
 ![System Architecture Diagram](/docs/images/system-design.jpeg)
 
