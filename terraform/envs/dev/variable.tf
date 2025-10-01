@@ -15,3 +15,8 @@ variable "allowed_origins" {
   type        = list(string)
   default     = ["*"]
 }
+
+variable "key_name" {
+  description = "Name of the SSH key pair to use for EC2 instances"
+  type        = string
+}
