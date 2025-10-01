@@ -24,7 +24,7 @@ BetterStart is built on a **microservices architecture** for scalability and mai
    **OR**  
    - Use **Terraform** for automated provisioning (recommended):  
      ```bash
-     cd infrastructure/src
+     cd terraform/src
      terraform init
      terraform plan
      terraform apply --auto-approve
