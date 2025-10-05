@@ -13,6 +13,12 @@ module "vpc" {
   }
 }
 
+module "security_group" {
+  source         = "../../modules/security-group"
+  vpc_id         = module.vpc.vpc_id
+  vpc_cidr_block = module.vpc.vpc_cidr
+}
+
 module "ec2" {
   source             = "../../modules/ec2"
   key_name           = var.key_name
