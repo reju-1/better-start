@@ -34,6 +34,7 @@ resource "aws_vpc_security_group_egress_rule" "alb_allow_all_traffic" {
   description       = "Allow all outbound traffic"
 }
 
+
 ## --------------EC2 Security Group--------------------
 resource "aws_security_group" "ec2_sg" {
   name        = "bs-ec2-sg"
@@ -62,9 +63,57 @@ resource "aws_vpc_security_group_ingress_rule" "ec2_allow_https_from_alb" {
   to_port                      = 443
   description                  = "Allow HTTPS from ALB"
 }
+resource "aws_vpc_security_group_ingress_rule" "ec2_allow_ssh_from_bastion" {
+  security_group_id            = aws_security_group.ec2_sg.id
+  referenced_security_group_id = aws_security_group.bastion_sg.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+  description                  = "Allow SSH from bastion host"
+}
 
 resource "aws_vpc_security_group_egress_rule" "ec2_allow_all_traffic" {
   security_group_id = aws_security_group.ec2_sg.id
+  cidr_ipv4         = "0.0.0.0/0"
+  ip_protocol       = "-1"
+  description       = "Allow all outbound traffic"
+}
+
+
+## --------------Bastion Host Security Group--------------------
+resource "aws_security_group" "bastion_sg" {
+  name        = "bs-bastion-sg"
+  description = "Allow SSH access from trusted IP, allow outbound traffic"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "bs-bastion-sg"
+  }
+}
+
+## Inbound: Allow SSH only from admin ip
+resource "aws_vpc_security_group_ingress_rule" "bastion_allow_ssh_from_admin" {
+  security_group_id = aws_security_group.bastion_sg.id
+  cidr_ipv4         = var.admin_ip_cidr
+  from_port         = 22
+  ip_protocol       = "tcp"
+  to_port           = 22
+  description       = "Allow SSH from admin workstation"
+}
+
+## Outbound: Allow SSH to private EC2 instances
+resource "aws_vpc_security_group_egress_rule" "bastion_allow_ssh_to_ec2" {
+  security_group_id            = aws_security_group.bastion_sg.id
+  referenced_security_group_id = aws_security_group.ec2_sg.id
+  from_port                    = 22
+  ip_protocol                  = "tcp"
+  to_port                      = 22
+  description                  = "Allow SSH to EC2 instances"
+}
+
+## Outbound: Allow all other traffic
+resource "aws_vpc_security_group_egress_rule" "bastion_allow_all_outbound" {
+  security_group_id = aws_security_group.bastion_sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1"
   description       = "Allow all outbound traffic"

@@ -8,3 +8,9 @@ variable "vpc_cidr_block" {
   type        = string
   default     = "10.0.0.0/16"
 }
+
+variable "admin_ip_cidr" {
+  description = "Trusted admin IP for SSH access"
+  type        = string
+  default     = "0.0.0.0/0" # Security risk !!!
+}
