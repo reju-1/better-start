@@ -5,6 +5,7 @@ resource "aws_instance" "bastion" {
   subnet_id              = var.public_subnet_ids[0]
   key_name               = var.key_name
   vpc_security_group_ids = [var.bastion_host_sg_id]
+  user_data              = file("${path.module}/user-data/bastion_host.sh")
 
   tags = {
     Name = "BS-Bastion-Host"
