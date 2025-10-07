@@ -26,3 +26,19 @@ variable "instance_type" {
   type        = string
   default     = "t2.micro"
 }
+
+# ------------------Security-Groups------------------
+variable "alb_sg_id" {
+  description = "Security Group ID for the Application Load Balancer (ALB)"
+  type        = string
+}
+
+variable "ec2_sg_id" {
+  description = "Security Group ID for EC2 instances (used for ALB to EC2 communication)"
+  type        = string
+}
+
+variable "bastion_host_sg_id" {
+  description = "Security Group ID for the Bastion Host"
+  type        = string
+}

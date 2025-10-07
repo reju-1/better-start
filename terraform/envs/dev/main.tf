@@ -26,4 +26,8 @@ module "ec2" {
   vpc_cidr           = module.vpc.vpc_cidr
   public_subnet_ids  = module.vpc.public_subnet_ids
   private_subnet_ids = module.vpc.private_subnet_ids
+  # Security groups
+  alb_sg_id          = module.security_group.alb_security_sg_id
+  ec2_sg_id          = module.security_group.ec2_security_sg_id
+  bastion_host_sg_id = module.security_group.bastion_security_sg_id
 }

@@ -24,3 +24,8 @@ output "worker_private_ip" {
   value       = module.ec2.worker_private_ip
   description = "Private IP of RabbitMQ worker instance"
 }
+
+output "bastion_host_public_ip" {
+  value       = module.ec2.bastion_host_public_ip
+  description = "Public IP of bastion host instance"
+}

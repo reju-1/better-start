@@ -1,10 +1,24 @@
+## -----------------------Bastion-Host------------------------------
+resource "aws_instance" "bastion" {
+  ami                    = data.aws_ami.ubuntu.id
+  instance_type          = var.instance_type
+  subnet_id              = var.public_subnet_ids[0]
+  key_name               = var.key_name
+  vpc_security_group_ids = [var.bastion_host_sg_id]
+
+  tags = {
+    Name = "BS-Bastion-Host"
+    Role = "Bastion-host"
+  }
+}
+
 ## -----------------------Backend-Instance------------------------------
 resource "aws_instance" "backend" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
   subnet_id              = var.public_subnet_ids[0]
   key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.public_sg["backend"].id]
+  vpc_security_group_ids = [var.ec2_sg_id]
 
   tags = {
     Name = "BS-Backend-Instance"
@@ -18,7 +32,7 @@ resource "aws_instance" "frontend" {
   instance_type          = var.instance_type
   subnet_id              = var.public_subnet_ids[0]
   key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.public_sg["frontend"].id]
+  vpc_security_group_ids = [var.ec2_sg_id]
 
   tags = {
     Name = "BS-Frontend-Instance"
