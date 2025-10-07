@@ -9,7 +9,7 @@ echo "=== Starting Node.js installation via NVM ==="
 
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y
-apt-get install -y curl build-essential
+apt-get install -y curl build-essential git
 
 # Install NVM
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
@@ -43,3 +43,13 @@ export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"
 EOF
+
+
+# =======================Create a note and Bring the Code============================
+
+# Create a note as ubuntu user
+sudo -u ubuntu bash -c 'echo "# Frontend Initialized" > /home/ubuntu/frontend.md'
+sudo -u ubuntu bash -c 'echo "Created on first boot" >> /home/ubuntu/frontend.md'
+
+# Clone repo as ubuntu user
+sudo -u ubuntu git clone https://github.com/reju-1/better-start.git /home/ubuntu/better-start

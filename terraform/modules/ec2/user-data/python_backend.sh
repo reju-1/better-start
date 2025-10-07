@@ -12,7 +12,7 @@ export DEBIAN_FRONTEND=noninteractive
 apt-get update -y && apt-get upgrade -y
 
 # ====== Install Python, pip, and pipx ======
-apt-get install -y python3 python3-pip python3-venv pipx
+apt-get install -y python3 python3-pip python3-venv pipx git
 
 # ====== Ensure pipx is in PATH ======
 pipx ensurepath
@@ -35,3 +35,13 @@ echo "UV version:"
 /root/.local/bin/uv --version
 
 echo "User data script completed successfully!"
+
+
+# =======================Create a note and Bring the Code=====================
+
+# create note as ubuntu user
+sudo -u ubuntu bash -c 'echo "# Backend Initialized" > /home/ubuntu/backend.md'
+sudo -u ubuntu bash -c 'echo "Created on first boot" >> /home/ubuntu/backend.md'
+
+# Clone repo as ubuntu user
+sudo -u ubuntu git clone https://github.com/reju-1/better-start.git /home/ubuntu/better-start
