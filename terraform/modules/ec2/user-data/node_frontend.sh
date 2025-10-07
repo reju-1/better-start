@@ -53,3 +53,6 @@ sudo -u ubuntu bash -c 'echo "Created on first boot" >> /home/ubuntu/frontend.md
 
 # Clone repo as ubuntu user
 sudo -u ubuntu git clone https://github.com/reju-1/better-start.git /home/ubuntu/better-start
+
+
+echo "User data script completed successfully!"

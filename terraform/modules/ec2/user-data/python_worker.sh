@@ -11,6 +11,10 @@ echo "Starting user data script..."
 export DEBIAN_FRONTEND=noninteractive
 apt-get update -y && apt-get upgrade -y
 
+# ====== Enable universe repo ======
+add-apt-repository universe -y
+apt-get update -y
+
 # ====== Install Python, pip, and pipx ======
 apt-get install -y python3 python3-pip python3-venv pipx git
 
@@ -34,7 +38,7 @@ pip3 --version
 echo "UV version:"
 /root/.local/bin/uv --version
 
-echo "User data script completed successfully!"
+echo "=====Python and UV installed successfully======"
 
 
 # ====================Create a note and Bring the Code==========================
@@ -45,3 +49,6 @@ sudo -u ubuntu bash -c 'echo "Created on first boot" >> /home/ubuntu/worker.md'
 
 # Clone repo as ubuntu user
 sudo -u ubuntu git clone https://github.com/reju-1/better-start.git /home/ubuntu/better-start
+
+
+echo "User data script completed successfully!"
