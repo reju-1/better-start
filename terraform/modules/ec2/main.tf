@@ -16,7 +16,7 @@ resource "aws_instance" "bastion" {
 resource "aws_instance" "backend" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.public_subnet_ids[0]
+  subnet_id              = var.private_subnet_ids[0]
   key_name               = var.key_name
   vpc_security_group_ids = [var.ec2_sg_id]
 
@@ -30,7 +30,7 @@ resource "aws_instance" "backend" {
 resource "aws_instance" "frontend" {
   ami                    = data.aws_ami.ubuntu.id
   instance_type          = var.instance_type
-  subnet_id              = var.public_subnet_ids[0]
+  subnet_id              = var.private_subnet_ids[0]
   key_name               = var.key_name
   vpc_security_group_ids = [var.ec2_sg_id]
 
