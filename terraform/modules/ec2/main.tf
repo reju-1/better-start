@@ -50,7 +50,7 @@ resource "aws_instance" "worker" {
   instance_type          = var.instance_type
   subnet_id              = var.private_subnet_ids[0]
   key_name               = var.key_name
-  vpc_security_group_ids = [aws_security_group.worker_sg.id]
+  vpc_security_group_ids = [var.worker_sg_id]
   user_data              = file("${path.module}/user-data/python_worker.sh")
 
   tags = {

@@ -22,23 +22,28 @@ variable "key_name" {
   type        = string
 }
 variable "instance_type" {
-  description = "EC2 instance type (e.g t2.micro, t3.small)"
+  description = "EC2 instance type"
   type        = string
   default     = "t2.micro"
 }
 
 # ------------------Security-Groups------------------
 variable "alb_sg_id" {
-  description = "Security Group ID for the Application Load Balancer (ALB)"
+  description = "Security Group ID for the Application Load Balancer"
   type        = string
 }
 
 variable "ec2_sg_id" {
-  description = "Security Group ID for EC2 instances (used for ALB to EC2 communication)"
+  description = "Security Group ID for EC2 instances (ALB => EC2)"
   type        = string
 }
 
 variable "bastion_host_sg_id" {
   description = "Security Group ID for the Bastion Host"
+  type        = string
+}
+
+variable "worker_sg_id" {
+  description = "Security group ID for worker instance"
   type        = string
 }

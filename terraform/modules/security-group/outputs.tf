@@ -12,3 +12,8 @@ output "bastion_security_sg_id" {
   description = "Bastion host ID for ssh into EC2"
   value       = aws_security_group.bastion_sg.id
 }
+
+output "worker_security_sg_id" {
+  description = "Security group ID for worker instance"
+  value       = aws_security_group.worker_sg.id
+}

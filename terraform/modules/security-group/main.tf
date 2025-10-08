@@ -118,3 +118,43 @@ resource "aws_vpc_security_group_egress_rule" "bastion_allow_all_outbound" {
   ip_protocol       = "-1"
   description       = "Allow all outbound traffic"
 }
+
+## --------------Worker Instance Security Group--------------------
+
+resource "aws_security_group" "worker_sg" {
+  name        = "worker-sg"
+  description = "Security group for worker instance"
+  vpc_id      = var.vpc_id
+
+  tags = {
+    Name = "worker-sg"
+  }
+}
+
+# SSH ingress rule
+resource "aws_vpc_security_group_ingress_rule" "worker_ssh" {
+  security_group_id = aws_security_group.worker_sg.id
+
+  from_port   = 22
+  to_port     = 22
+  ip_protocol = "tcp"
+  cidr_ipv4   = var.vpc_cidr_block
+  description = "SSH access from inside the VPC"
+
+  tags = {
+    Name = "worker-ssh-ingress"
+  }
+}
+
+# Allow all outbound traffic
+resource "aws_vpc_security_group_egress_rule" "worker_egress_all" {
+  security_group_id = aws_security_group.worker_sg.id
+
+  ip_protocol = "-1"
+  cidr_ipv4   = "0.0.0.0/0"
+  description = "Allow all outbound"
+
+  tags = {
+    Name = "worker-egress-all"
+  }
+}

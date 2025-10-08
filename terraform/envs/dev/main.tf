@@ -30,4 +30,5 @@ module "ec2" {
   alb_sg_id          = module.security_group.alb_security_sg_id
   ec2_sg_id          = module.security_group.ec2_security_sg_id
   bastion_host_sg_id = module.security_group.bastion_security_sg_id
+  worker_sg_id       = module.security_group.worker_security_sg_id
 }
