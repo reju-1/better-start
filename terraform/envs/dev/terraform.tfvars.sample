@@ -1,3 +1,9 @@
 region      = "ap-southeast-1"
 bucket_name = "better-start-bucket"
+
+## SSH
 key_name    = "new key pair"
+
+## DNS
+route53_zone_id = "zoon_id"
+base_domain_name = "nano-url.com"

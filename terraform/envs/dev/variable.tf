@@ -20,3 +20,14 @@ variable "key_name" {
   description = "Name of the SSH key pair to use for EC2 instances"
   type        = string
 }
+
+## ----------------DNS---------------------
+variable "route53_zone_id" {
+  description = "Route53 hosted zone ID"
+  type        = string
+}
+
+variable "base_domain_name" {
+  description = "Base domain name of Route 53 hosted zone (e.g example.com)  Used for creating subdomains such as www or api."
+  type        = string
+}

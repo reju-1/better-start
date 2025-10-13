@@ -21,6 +21,10 @@ resource "aws_instance" "backend" {
   key_name               = var.key_name
   vpc_security_group_ids = [var.ec2_sg_id]
   user_data              = file("${path.module}/user-data/python_backend.sh")
+  # Prototyping
+  # user_data = templatefile("${path.module}/user-data/nginx_web_server.sh.tftpl", {
+  #   message = "***Backend***"
+  # })
 
   tags = {
     Name = "BS-Backend-Instance"
@@ -36,7 +40,10 @@ resource "aws_instance" "frontend" {
   key_name               = var.key_name
   vpc_security_group_ids = [var.ec2_sg_id]
   user_data              = file("${path.module}/user-data/node_frontend.sh")
-
+  # Prototyping
+  # user_data = templatefile("${path.module}/user-data/nginx_web_server.sh.tftpl", {
+  #   message = "+---Frontend---+"
+  # })
 
   tags = {
     Name = "BS-Frontend-Instance"

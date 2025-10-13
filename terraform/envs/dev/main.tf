@@ -32,3 +32,34 @@ module "ec2" {
   bastion_host_sg_id = module.security_group.bastion_security_sg_id
   worker_sg_id       = module.security_group.worker_security_sg_id
 }
+
+module "alb" {
+  source                = "../../modules/alb"
+  vpc_id                = module.vpc.vpc_id
+  public_subnet_ids     = module.vpc.public_subnet_ids
+  alb_security_group_id = module.security_group.alb_security_sg_id
+  base_domain_name      = var.base_domain_name
+
+  # HTTPS
+  certificate_arn = module.acm.certificate_arn
+
+  # instances
+  www_instance_ids = [module.ec2.frontend_instance_id]
+  api_instance_ids = [module.ec2.backend_instance_id]
+}
+
+module "route53" {
+  source         = "../../global/route53"
+  domain_name    = var.base_domain_name
+  hosted_zone_id = var.route53_zone_id
+
+  # alb dns info
+  alb_dns_name = module.alb.alb_dns_name
+  alb_zone_id  = module.alb.alb_zone_id
+}
+
+module "acm" {
+  source          = "../../global/acm"
+  domain_name     = var.base_domain_name
+  route53_zone_id = var.route53_zone_id
+}
