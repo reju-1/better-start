@@ -1,0 +1,42 @@
+#!/bin/bash
+# Update system and install nginx
+apt update -y
+apt install -y nginx
+
+# Create a simple HTML page
+cat <<EOF > /var/www/html/index.nginx-debian.html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hello from EC2</title>
+  <style>
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background-color: #000000;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+      margin: 0;
+    }
+    h1 {
+      font-size: 48px;
+    }
+  </style>
+</head>
+<body>
+  <h1>${message}</h1>
+</body>
+</html>
+EOF
+
+# Enable and start nginx
+systemctl enable nginx
+systemctl start nginx
+
+
+# Usage:
+# Installs the Nginx web server and displays a custom message
+# on a simple HTML page. Use the 'message' variable to set the text.
+# Intended for prototyping server setups (frontend or backend).
