@@ -14,7 +14,7 @@ It is offered as a **SaaS product** and provides a set of tools to streamline co
 
 BetterStart is built on a **microservices architecture** for scalability and maintainability.
 
-![AWS Architecture](./docs/images/aws_architecture_diagram.png)
+![AWS Architecture](./docs/images/aws_architecture_diagram.svg)
 
 ## 🚀 Deployment
 
