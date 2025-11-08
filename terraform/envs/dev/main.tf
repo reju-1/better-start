@@ -1,8 +1,8 @@
-# module "s3" {
-#   source          = "../../modules/s3"
-#   bucket_name     = var.bucket_name
-#   allowed_origins = var.allowed_origins
-# }
+module "s3" {
+  source          = "../../modules/s3"
+  bucket_prefix   = var.bucket_name_prefix
+  allowed_origins = var.allowed_origins
+}
 
 module "vpc" {
   source      = "../../modules/vpc"

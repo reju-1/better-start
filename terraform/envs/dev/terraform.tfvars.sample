@@ -1,5 +1,8 @@
+## Global
 region      = "ap-southeast-1"
-bucket_name = "better-start-bucket"
+
+## S3 bucket
+bucket_name_prefix = "better-start-bucket"
 
 ## SSH
 key_name    = "new key pair"

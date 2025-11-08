@@ -4,7 +4,7 @@ resource "random_id" "bucket_suffix" {
 
 ## Create S3 Bucket
 resource "aws_s3_bucket" "app_bucket" {
-  bucket = format("%s-%s", var.bucket_name, random_id.bucket_suffix.hex)
+  bucket = format("%s-%s", var.bucket_prefix, random_id.bucket_suffix.hex)
 
   tags = {
     Project     = "BetterStart"

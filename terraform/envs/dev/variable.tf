@@ -4,7 +4,7 @@ variable "region" {
   default     = "ap-southeast-1"
 }
 
-variable "bucket_name" {
+variable "bucket_name_prefix" {
   description = "The name of the S3 bucket"
   type        = string
   default     = "better-start-bucket"
