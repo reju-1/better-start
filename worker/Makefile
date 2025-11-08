@@ -11,7 +11,7 @@ run:  ## Run RabbitMq worker
 
 
 clean:  ## Clean Python cache and temporary files
-	find src/ -type d -name '__pycache__' -exec rm -r {} + -o -name '*.pyc' -delete -o -name '*.pyo' -delete
+	find app/ -type d -name '__pycache__' -exec rm -r {} + -o -name '*.pyc' -delete -o -name '*.pyo' -delete
 
 
 install:  ## Install dependencies from pyproject.toml using uv
