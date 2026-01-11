@@ -6,9 +6,23 @@ It is offered as a **SaaS product** and provides a set of tools to streamline co
 
 ## ✨ Key Features
 
+### Application Features
+
 1. **Project Management** – Manage projects, tasks, and workflows with ease.  
 2. **HR Management with AI-Driven CV Evaluation** – Automate CV screening and improve hiring efficiency.  
 3. **Legal GPT** – AI-powered generation of legal documents contextualized for Bangladeshi laws.
+
+
+### Security Features (14 Total)
+
+| AWS Service      |   Security Features |
+|------------------|---------------------|
+| **Amazon S3**    | • SSE-KMS Encryption<br>• CORS Policy<br>• Private Buckets with Pre-signed URLs   |
+| **VPC**          | • Network ACLs<br>• NAT Gateway<br>• Subnet Segregation                           |
+| **EC2**          | • Security Groups<br>• Private Subnet Deployment                                  |
+| **AWS WAF**      | • SQLi Prevention<br>• XSS Protection<br>• DDoS Mitigation<br>• Request Throttling|
+| **ACM + ALB**    | • HTTPS Enforcement  |
+| **Bastion Host** | • IP Whitelisting    |
 
 ## 🏗 Architecture
 
@@ -50,18 +64,6 @@ After infrastructure creation:
 - **WAF Rules**: Protection against common web exploits
 
 **Total AWS Services Used**: 10 (S3, VPC, EC2, RDS, Amazon MQ, WAF, ALB, ACM, KMS, Route 53)
-
-### Security Features (14 Total)
-
-| AWS Service      |   Security Features |
-|------------------|---------------------|
-| **Amazon S3**    | • SSE-KMS Encryption<br>• CORS Policy<br>• Private Buckets with Pre-signed URLs   |
-| **VPC**          | • Network ACLs<br>• NAT Gateway<br>• Subnet Segregation                           |
-| **EC2**          | • Security Groups<br>• Private Subnet Deployment                                  |
-| **AWS WAF**      | • SQLi Prevention<br>• XSS Protection<br>• DDoS Mitigation<br>• Request Throttling|
-| **ACM + ALB**    | • HTTPS Enforcement  |
-| **Bastion Host** | • IP Whitelisting    |
-
 
 ---
 
